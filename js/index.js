@@ -6,6 +6,8 @@ var paddle;
 var bricks, newBrick, brickInfo;
 var scoreText,score;
 var liveText,lives,lifeLostText;
+var playing;
+var startButton;
 
 function init(){
   /* Game : width, height, renderer, parent(dom id string)
@@ -40,6 +42,7 @@ function preload(){
   game.load.image('paddle', 'images/paddle.png');
   game.load.image('brick', 'images/brick.png');
   game.load.spritesheet('ball', 'images/spritesheet.png', 50, 52);
+  game.load.spritesheet('button', 'images/button.png', 120,40);
   
 }
 function create(){
@@ -52,7 +55,7 @@ function create(){
   
   ball.anchor.set(0.5, 2); /* add한 지정 위치에 대한 x, y 앵커지정*/
   game.physics.enable(ball, Phaser.Physics.ARCADE); /* ball에 물리엔진을 활성화 시킴*/
-  ball.body.velocity.set(150, -150); /* ball을 이동 x y*/
+  // ball.body.velocity.set(150, -150); /* ball을 이동 x y*/
   ball.body.collideWorldBounds = true; /* 캔버스 테두리 벽면 활성화 벽에 부딪힐 시 반전*/
   ball.body.bounce.set(0.9); /* 반전될 때의 중력 바운스값*/
   ball.checkWorldBounds = true; /* ball에 대한 월드바운스에서의 활동감지 활성화*/
@@ -77,6 +80,10 @@ function create(){
   lifeLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, '목숨이 남아 있습니다. 클릭하시면 게임이 진행됩니다.', textStyle);
   lifeLostText.anchor.set(0.5);
   lifeLostText.visible = false; /* 화면에서 숨김 */
+  
+  startButton = game.add.button(game.world.width*0.5, game.world.height*0.5, 'button', startGame, this, 1, 0, 2);
+  /* add.button(x,y ,'string name', callback function(), this, mouseover, mouseout, mousedown) */
+startButton.anchor.set(0.5); /* add한 지정 위치에 대한 x, y 앵커지정*/
 }
 
 function update(){
@@ -84,7 +91,7 @@ function update(){
   game.physics.arcade.collide(ball, bricks, ballHitBrick);
   /* collide의 세번째 매개변수는 옵션 : 충돌이 발생했을 때 실행된다 함.
      ballHitBrick함수는 충돌된 오브젝트들의 지정된 이름들을 인자로 받아냄 */
-  paddle.x = game.input.x || game.world.width*0.5;
+  if(playing) paddle.x = game.input.x || game.world.width*0.5;
   /* paddle의 x값을 인풋의 x값으로 고정함
   위만 하면은 첫 페이지 로드시에 모서리에 고정되어 나타나는걸 볼 수 있음.
   따라서 || game.world.width *0.5;를 기입하여 초기 x자리를 설정해줘야함.
@@ -189,4 +196,10 @@ function ballLeaveScreen(){
 
 function ballHitPaddle(ball, paddle){
   ball.animations.play('ballEffect');
+}
+
+function startGame() {
+  startButton.destroy(); /* startButton을 삭제함 */
+  ball.body.velocity.set(150, -150); /* ball에 대한 속도 변형 */
+  playing = true; /* playing을 true로 돌려 게임이 진행되었음을 알림 update() */
 }
