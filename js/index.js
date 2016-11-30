@@ -52,10 +52,7 @@ function create(){
   ball.body.collideWorldBounds = true; /* 캔버스 테두리 벽면 활성화 벽에 부딪힐 시 반전*/
   ball.body.bounce.set(0.9); /* 반전될 때의 중력 바운스값*/
   ball.checkWorldBounds = true; /* ball에 대한 월드바운스에서의 활동감지 활성화*/
-  ball.events.onOutOfBounds.add(function(){
-    /* ball이 화면 밖으로 나갔을 시 이벤트 핸들러가 발생함 */
-    location.reload();
-  });
+  ball.events.onOutOfBounds.add(ballLeaveScreen, this); /* 익명함수를 밖으로 뺌 ballLeaveScreen*/
   
   paddle = game.add.sprite(game.world.width*0.5, game.world.height-5, 'paddle');
   /* game.world.width*0.5 = 중앙, world.height-5 맨 아래 바텀에서-5 에 paddle을 add함 */
@@ -147,6 +144,27 @@ function ballHitBrick(ball, brick){
   /* 루프가 종료된 후*/
   if(count_alive==0){ /* bricks그룹에 속한 자식들의 노드가 모두 죽어있다면 count가 0 따라서 게임승리 */
     alert('win');
+    location.reload();
+  }
+}
+
+function ballLeaveScreen(){
+  lives--; /* 함수 호출시 목숨 하나씩 차감*/
+  
+  if(lives){ /* 목숨이 있다면*/
+    livesText.setText('목숨 : '+lives); /* livesText의 텍스트를 현재 목숨값으로 수정 */
+    lifeLostText.visible = true; /* 비저블 false였던 lifeLostText를 true로 바꿔 화면에 보임 */
+    ball.reset(game.world.width*0.5, game.world.height-25); /* ball의 xy를 수정함*/
+    paddle.reset(game.world.width*0.5, game.world.height-5); /* paddle의 xy를 수정함*/
+    
+    game.input.onDown.addOnce(function(){
+      /*이벤트중 addOnce는 한번만 실행함 예로 한번만 바인드 되야하는 경우 유용하다고 함*/
+      lifeLostText.visible = false; /* 누를 시 lifeLostText는 다시 숨김*/
+      ball.body.velocity.set(150, -150);  /* ball의 속도를 변형함 */
+    }, this);
+    
+  }else{ /* 만약 목숨이 없다면*/
+    alert('die');
     location.reload();
   }
 }
