@@ -65,6 +65,9 @@ function create(){
 
 function update(){
   game.physics.arcade.collide(ball, paddle); /* 충격감지하여 반전*/
+  game.physics.arcade.collide(ball, bricks, ballHitBrick);
+  /* collide의 세번째 매개변수는 옵션 : 충돌이 발생했을 때 실행된다 함.
+     ballHitBrick함수는 충돌된 오브젝트들의 지정된 이름들을 인자로 받아냄 */
   paddle.x = game.input.x || game.world.width*0.5;
   /* paddle의 x값을 인풋의 x값으로 고정함
   위만 하면은 첫 페이지 로드시에 모서리에 고정되어 나타나는걸 볼 수 있음.
@@ -108,4 +111,12 @@ function initBricks(){
       bricks.add(newBrick); /* bricks란 그룹에 newBrick을 집어 넣음 */
     }
   }
+}
+
+function ballHitBrick(ball, brick){
+  /* 인자가 들어오는 순서
+     첫인자 : 충돌하는 오브젝트
+     두번째 : 외부 충격받는 오브젝트
+  */
+  brick.kill(); /* 만약 ball.kill()하게되면 ball이 사라짐 */
 }
