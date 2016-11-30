@@ -196,6 +196,8 @@ function ballLeaveScreen(){
 
 function ballHitPaddle(ball, paddle){
   ball.animations.play('ballEffect');
+  ball.body.velocity.x = -1*5*(paddle.x-ball.x);
+  /*  -1 x 5 x (paddle.x - ball.x) */
 }
 
 function startGame() {
