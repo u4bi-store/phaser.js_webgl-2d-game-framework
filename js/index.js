@@ -35,4 +35,7 @@ function preload(){
 function create(){
   ball = game.add.sprite(50, 50, 'ball'); /* add. sprite x y id 생성 렌더링됨*/
 }
-function update(){}
+function update(){
+  ball.x ++;
+  ball.y ++;
+}
