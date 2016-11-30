@@ -74,6 +74,7 @@ function update(){
 }
 
 function initBricks(){
+  /* 생성될 벽돌의 정보를 brickInfo 객체에 담음 */
   brickInfo ={
     width: 50,
     height: 20,
@@ -87,4 +88,20 @@ function initBricks(){
     },
     padding: 10
   };
+  
+  bricks = game.add.group(); /* bricks를 비어있는 그룹에 담음 그 후 루프를 돌려 newBrick을 담을 것임*/
+  
+  /* c = column, r = row 행과 열을 잇는 포문*/
+  for(c=0; c<brickInfo.count.col; c++){
+    for(r=0; r<brickInfo.count.row; r++){
+    var brickX = 0;
+    var brickY = 0;
+      
+      newBrick = game.add.sprite(brickX, brickY, 'brick'); /* x,y를 지정하고 brick을 add함 */
+      game.physics.enable(newBrick, Phaser.Physics.ARCADE); /* 지정된 newBrick의 중력 활성화 */
+      newBrick.body.immovable = true; /* 외부의 충돌이 자신에게 감지되어도 안 움직이게함 */
+      newBrick.anchor.set(0.5); /* add한 지정 위치에 대한 x, y 앵커지정 */
+      bricks.add(newBrick); /* bricks란 그룹에 newBrick을 집어 넣음 */
+    }
+  }
 }
