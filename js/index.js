@@ -37,9 +37,11 @@ function preload(){
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE); /* 물리 엔진 초기화 함수 내부 첫줄에 설정해야한다고 함.*/
   
-  ball = game.add.sprite(50, 50, 'ball'); /* add. sprite x y id 생성 렌더링됨*/
+  ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
+  /* add. sprite x y id 생성 렌더링됨*/
+  ball.anchor.set(0.5, 2); /* add한 지정 위치에 대한 x, y 앵커지정*/
   game.physics.enable(ball, Phaser.Physics.ARCADE); /* ball에 물리엔진을 활성화 시킴*/
-  ball.body.velocity.set(150,150); /* ball을 이동 x y*/
+  ball.body.velocity.set(150, -150); /* ball을 이동 x y*/
   ball.body.collideWorldBounds = true; /* 캔버스 테두리 벽면 활성화 벽에 부딪힐 시 반전*/
   ball.body.bounce.set(0.9); /* 반전될 때의 중력 바운스값*/
   
