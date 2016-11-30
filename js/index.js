@@ -127,4 +127,17 @@ function ballHitBrick(ball, brick){
   brick.kill(); /* 만약 ball.kill()하게되면 ball이 사라짐 */
   score += 10;
   scoreText.setText('점수 : '+score);
+  
+  var count_alive = 0; /* 카운트*/
+  for(i=0; i< bricks.children.length; i++){ /* bricks 그룹에 속한 자식들의 length까지 루프*/
+    if(bricks.children[i].alive == true){ /* 자식들의 노드가 살아있다면 count+1 해줌*/
+      count_alive++;
+    }
+  }
+  
+  /* 루프가 종료된 후*/
+  if(count_alive==0){ /* bricks그룹에 속한 자식들의 노드가 모두 죽어있다면 count가 0 따라서 게임승리 */
+    alert('win');
+    location.reload();
+  }
 }
