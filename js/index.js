@@ -2,6 +2,7 @@
 
 var game;
 var ball;
+var paddle;
 
 function init(){
   /* Game : width, height, renderer, parent(dom id string)
@@ -29,18 +30,28 @@ function preload(){
   
   game.stage.backgroundColor = 'rgba(245, 245, 245, 1)'; /* css 문법 이용해 컬러 변경 가능*/
   
-  game.load.image('ball', 'images/smiley.gif'); /* 이미지 불러오고 ball이란 id를 줌*/
+  game.load.image('ball', 'images/ball.png'); /* 이미지 불러오고 ball이란 id를 줌*/
+  game.load.image('paddle', 'images/paddle.png');
   
 }
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE); /* 물리 엔진 초기화 함수 내부 첫줄에 설정해야한다고 함.*/
+  
   ball = game.add.sprite(50, 50, 'ball'); /* add. sprite x y id 생성 렌더링됨*/
   game.physics.enable(ball, Phaser.Physics.ARCADE); /* ball에 물리엔진을 활성화 시킴*/
-  
-  ball.body.velocity.set(100,0); /* ball을 이동 x y*/
-  
+  ball.body.velocity.set(150,150); /* ball을 이동 x y*/
   ball.body.collideWorldBounds = true; /* 캔버스 테두리 벽면 활성화 벽에 부딪힐 시 반전*/
   ball.body.bounce.set(0.9); /* 반전될 때의 중력 바운스값*/
+  
+  paddle = game.add.sprite(game.world.width*0.5, game.world.height-5, 'paddle');
+  /* game.world.width*0.5 = 중앙, world.height-5 맨 아래 바텀에서-5 에 paddle을 add함 */
+  paddle.anchor.set(0.5, 1); /* add한 지정 위치에 대한 x, y 앵커지정*/
+  game.physics.enable(paddle, Phaser.Physics.ARCADE); /* paddle에 물리엔진을 활성화 시킴*/
+  
+  paddle.body.immovable = true;
+  /* 외부 오브젝트와 충격을 받아 반전을 일으킬 때 immovable가 true시 paddle는 반전안함*/
 }
+
 function update(){
+  game.physics.arcade.collide(ball, paddle); /* 충격감지하여 반전*/
 }
