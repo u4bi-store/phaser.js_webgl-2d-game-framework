@@ -5,6 +5,7 @@ var ball;
 var paddle;
 var bricks, newBrick, brickInfo;
 var scoreText,score;
+var liveText,lives,lifeLostText;
 
 function init(){
   /* Game : width, height, renderer, parent(dom id string)
@@ -16,6 +17,7 @@ function init(){
   });
   
   score = 0;
+  lives = 3;
   
 }
 
@@ -67,6 +69,13 @@ function create(){
   
   scoreText = game.add.text(5, 5, '점수 : 0', { font: '16px Consolas', fill: '#072541' });
   /* add.text( x,y, 'string', {canvas style} )*/
+  
+  livesText = game.add.text(game.world.width-5, 5, '목숨 : '+lives, { font: '16px Consolas', fill: '#072541' });
+  livesText.anchor.set(1,0);
+  
+  lifeLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, '목숨이 남아 있습니다. 클릭하시면 게임이 진행됩니다.', { font: '16px Consolas', fill: '#072541' });
+  lifeLostText.anchor.set(0.5);
+  lifeLostText.visible = false; /* 화면에서 숨김 */
 }
 
 function update(){
