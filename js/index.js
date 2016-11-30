@@ -4,6 +4,7 @@ var game;
 var ball;
 var paddle;
 var bricks, newBrick, brickInfo;
+var scoreText, score;
 
 function init(){
   /* Game : width, height, renderer, parent(dom id string)
@@ -13,6 +14,8 @@ function init(){
     create: create,
     update: update
   });
+  
+  score = 0;
   
 }
 
@@ -61,6 +64,9 @@ function create(){
   /* 외부 오브젝트와 충격을 받아 반전을 일으킬 때 immovable가 true시 paddle는 반전안함*/
   
   initBricks();
+  
+  scoreText = game.add.text(5, 5, '점수 : 0', { font: '16px Consolas', fill: '#072541' });
+  /* add.text( x,y, 'string', {canvas style} )*/
 }
 
 function update(){
