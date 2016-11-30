@@ -144,7 +144,7 @@ function ballHitBrick(ball, brick){
   // brick.kill(); /* 만약 ball.kill()하게되면 ball이 사라짐 */
   
   /* brick가 사라질 떄 tween 효과 주기*/
-  var killTween = game.add.tween(brick.scale); /* 해당 brick에 새 tween 지정 후 변수에 정의함*/ 
+  // var killTween = game.add.tween(brick.scale); /* 해당 brick에 새 tween 지정 후 변수에 정의함*/ 
   
   // killTween.to({x:0,y:0}, 2000, Phaser.Easing.Linear.None);
   // /* {scale takes a scale value, 1 being 100% of size, 0 being 0% of size etc}, time
@@ -154,20 +154,12 @@ function ballHitBrick(ball, brick){
   // }, this);
   // killTween.start(); /* killTween에 정의된대로 실행*/
   
-  game.add.tween(brick.scale).to({x:0,y:0}, 500, Phaser.Easing.Elastic.None, true, 100); /* 단축식*/
+  game.add.tween(brick.scale).to({x:0,y:0}, 500, Phaser.Easing.Elastic.Out, true, 100); /* 단축식*/
   /* to({x,y etc}, 변화까지 걸리는 시간, Elastic옵션속성, true사라짐/false안사라짐, 딜레이시간 후 진행)*/
   score += 10;
   scoreText.setText('점수 : '+score);
   
-  var count_alive = 0; /* 카운트*/
-  for(i=0; i< bricks.children.length; i++){ /* bricks 그룹에 속한 자식들의 length까지 루프*/
-    if(bricks.children[i].alive == true){ /* 자식들의 노드가 살아있다면 count+1 해줌*/
-      count_alive++;
-    }
-  }
-  
-  /* 루프가 종료된 후*/
-  if(count_alive==0){ /* bricks그룹에 속한 자식들의 노드가 모두 죽어있다면 count가 0 따라서 게임승리 */
+  if(score === brickInfo.count.row * brickInfo.count.col * 10) {
     alert('win');
     location.reload();
   }
