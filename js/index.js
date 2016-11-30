@@ -79,14 +79,14 @@ function initBricks(){
     width: 50,
     height: 20,
     count: {
-      row: 7,
-      col: 3
+      row: 5,
+      col: 1
     },
     offset: {
       top: 50,
       left: 60
     },
-    padding: 10
+    padding: 40
   };
   
   bricks = game.add.group(); /* bricks를 비어있는 그룹에 담음 그 후 루프를 돌려 newBrick을 담을 것임*/
@@ -94,9 +94,13 @@ function initBricks(){
   /* c = column, r = row 행과 열을 잇는 포문*/
   for(c=0; c<brickInfo.count.col; c++){
     for(r=0; r<brickInfo.count.row; r++){
-    var brickX = 0;
-    var brickY = 0;
       
+    var brickX = (r * (brickInfo.width + brickInfo.padding) )  + brickInfo.offset.left;
+      /* (로우값 x (블럭 너비값 + 블럭 패딩값) ) + 블럭 왼쪽 마진값 
+      */
+    var brickY = (c * (brickInfo.height + brickInfo.padding) ) + brickInfo.offset.top;
+      /* (컬럼값 x (블럭 높이값 + 블럭 패딩값) ) + 블럭 위쪽 마진값 
+      */
       newBrick = game.add.sprite(brickX, brickY, 'brick'); /* x,y를 지정하고 brick을 add함 */
       game.physics.enable(newBrick, Phaser.Physics.ARCADE); /* 지정된 newBrick의 중력 활성화 */
       newBrick.body.immovable = true; /* 외부의 충돌이 자신에게 감지되어도 안 움직이게함 */
