@@ -4,7 +4,7 @@ var game;
 var ball;
 var paddle;
 var bricks, newBrick, brickInfo;
-var scoreText, score;
+var scoreText,score;
 
 function init(){
   /* Game : width, height, renderer, parent(dom id string)
@@ -125,4 +125,6 @@ function ballHitBrick(ball, brick){
      두번째 : 외부 충격받는 오브젝트
   */
   brick.kill(); /* 만약 ball.kill()하게되면 ball이 사라짐 */
+  score += 10;
+  scoreText.setText('점수 : '+score);
 }
