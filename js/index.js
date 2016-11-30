@@ -159,7 +159,6 @@ function ballHitBrick(ball, brick){
   killTween.onComplete.addOnce(function(){ /* tween이 완료될 때 호출 되는 핸들러*/
       brick.kill();
   }, this);
-  killTween.start();
   
   score += 10;
   scoreText.setText('점수 : '+score);
