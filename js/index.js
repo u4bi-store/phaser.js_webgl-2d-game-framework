@@ -33,9 +33,12 @@ function preload(){
   
 }
 function create(){
+  game.physics.startSystem(Phaser.Physics.ARCADE); /* 물리 엔진 초기화 함수 내부 첫줄에 설정해야한다고 함.*/
   ball = game.add.sprite(50, 50, 'ball'); /* add. sprite x y id 생성 렌더링됨*/
+  game.physics.enable(ball, Phaser.Physics.ARCADE); /* ball에 물리엔진을 활성화 시킴*/
+  
+  ball.body.velocity.set(100,0); /* ball을 이동 x y*/
+  
 }
 function update(){
-  ball.x ++;
-  ball.y ++;
 }
