@@ -54,4 +54,10 @@ function create(){
 
 function update(){
   game.physics.arcade.collide(ball, paddle); /* 충격감지하여 반전*/
+  paddle.x = game.input.x || game.world.width*0.5;
+  /* paddle의 x값을 인풋의 x값으로 고정함
+  위만 하면은 첫 페이지 로드시에 모서리에 고정되어 나타나는걸 볼 수 있음.
+  따라서 || game.world.width *0.5;를 기입하여 초기 x자리를 설정해줘야함.
+  
+  첫 로드 시 input.x가 아직 정의되지 않아 뒤에 || 에 따라 디폴트 위치 설정 가능하다함. */
 }
