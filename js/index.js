@@ -67,13 +67,13 @@ function create(){
   
   initBricks();
   
-  scoreText = game.add.text(5, 5, '점수 : 0', { font: '16px Consolas', fill: '#072541' });
+  var textStyle = { font: '16px Consolas', fill: '#072541' }; /* 중복 코드를 핸들링함 */
+  
+  scoreText = game.add.text(5, 5, '점수 : 0', textStyle);
   /* add.text( x,y, 'string', {canvas style} )*/
-  
-  livesText = game.add.text(game.world.width-5, 5, '목숨 : '+lives, { font: '16px Consolas', fill: '#072541' });
+  livesText = game.add.text(game.world.width-5, 5, '목숨 : '+lives, textStyle);
   livesText.anchor.set(1,0);
-  
-  lifeLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, '목숨이 남아 있습니다. 클릭하시면 게임이 진행됩니다.', { font: '16px Consolas', fill: '#072541' });
+  lifeLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, '목숨이 남아 있습니다. 클릭하시면 게임이 진행됩니다.', textStyle);
   lifeLostText.anchor.set(0.5);
   lifeLostText.visible = false; /* 화면에서 숨김 */
 }
