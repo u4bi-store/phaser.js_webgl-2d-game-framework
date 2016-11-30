@@ -36,9 +36,10 @@ function preload(){
   
   game.stage.backgroundColor = 'rgba(245, 245, 245, 1)'; /* css 문법 이용해 컬러 변경 가능*/
   
-  game.load.image('ball', 'images/ball.png'); /* 이미지 불러오고 ball이란 id를 줌*/
+  //game.load.image('ball', 'images/ball.png'); /* 이미지 불러오고 ball이란 id를 줌*/
   game.load.image('paddle', 'images/paddle.png');
   game.load.image('brick', 'images/brick.png');
+  game.load.spritesheet('ball', 'images/spritesheet.png', 50, 52);
   
 }
 function create(){
@@ -46,6 +47,9 @@ function create(){
   game.physics.arcade.checkCollision.down = false; /* 아래면 충돌감지 해제 비활성화 */
   ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
   /* add. sprite x y id 생성 렌더링됨*/
+  ball.animations.add('ballEffect', [0,1,0,2,0,1,0,2,0], 24);
+  /* ball.animations.add('아이디 지정함', [참조할 순서,순서], 초당 fps)*/
+  
   ball.anchor.set(0.5, 2); /* add한 지정 위치에 대한 x, y 앵커지정*/
   game.physics.enable(ball, Phaser.Physics.ARCADE); /* ball에 물리엔진을 활성화 시킴*/
   ball.body.velocity.set(150, -150); /* ball을 이동 x y*/
@@ -76,7 +80,7 @@ function create(){
 }
 
 function update(){
-  game.physics.arcade.collide(ball, paddle); /* 충격감지하여 반전*/
+  game.physics.arcade.collide(ball, paddle, ballHitPaddle); /* 볼이 선반을 칠 때 ballHitPaddle호출*/
   game.physics.arcade.collide(ball, bricks, ballHitBrick);
   /* collide의 세번째 매개변수는 옵션 : 충돌이 발생했을 때 실행된다 함.
      ballHitBrick함수는 충돌된 오브젝트들의 지정된 이름들을 인자로 받아냄 */
@@ -167,4 +171,8 @@ function ballLeaveScreen(){
     alert('die');
     location.reload();
   }
+}
+
+function ballHitPaddle(ball, paddle){
+  ball.animations.play('ballEffect');
 }
