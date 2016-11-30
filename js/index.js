@@ -39,6 +39,8 @@ function create(){
   
   ball.body.velocity.set(100,0); /* ball을 이동 x y*/
   
+  ball.body.collideWorldBounds = true; /* 캔버스 테두리 벽면 활성화 벽에 부딪힐 시 반전*/
+  ball.body.bounce.set(0.9); /* 반전될 때의 중력 바운스값*/
 }
 function update(){
 }
