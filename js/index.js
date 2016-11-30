@@ -36,7 +36,7 @@ function preload(){
 }
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE); /* 물리 엔진 초기화 함수 내부 첫줄에 설정해야한다고 함.*/
-  
+  game.physics.arcade.checkCollision.down = false; /* 아래면 충돌감지 해제 비활성화 */
   ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
   /* add. sprite x y id 생성 렌더링됨*/
   ball.anchor.set(0.5, 2); /* add한 지정 위치에 대한 x, y 앵커지정*/
@@ -44,6 +44,11 @@ function create(){
   ball.body.velocity.set(150, -150); /* ball을 이동 x y*/
   ball.body.collideWorldBounds = true; /* 캔버스 테두리 벽면 활성화 벽에 부딪힐 시 반전*/
   ball.body.bounce.set(0.9); /* 반전될 때의 중력 바운스값*/
+  ball.checkWorldBounds = true; /* ball에 대한 월드바운스에서의 활동감지 활성화*/
+  ball.events.onOutOfBounds.add(function(){
+    /* ball이 화면 밖으로 나갔을 시 이벤트 핸들러가 발생함 */
+    location.reload();
+  });
   
   paddle = game.add.sprite(game.world.width*0.5, game.world.height-5, 'paddle');
   /* game.world.width*0.5 = 중앙, world.height-5 맨 아래 바텀에서-5 에 paddle을 add함 */
