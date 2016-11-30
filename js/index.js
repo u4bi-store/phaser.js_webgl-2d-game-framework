@@ -1,6 +1,7 @@
 /*index js*/
 
 var game;
+var ball;
 
 function init(){
   /* Game : width, height, renderer, parent(dom id string)
@@ -28,6 +29,10 @@ function preload(){
   
   game.stage.backgroundColor = 'rgba(245, 245, 245, 1)'; /* css 문법 이용해 컬러 변경 가능*/
   
+  game.load.image('ball', 'images/smiley.gif'); /* 이미지 불러오고 ball이란 id를 줌*/
+  
 }
-function create(){}
+function create(){
+  ball = game.add.sprite(50, 50, 'ball'); /* add. sprite x y id 생성 렌더링됨*/
+}
 function update(){}
