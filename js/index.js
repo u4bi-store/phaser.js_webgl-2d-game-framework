@@ -3,8 +3,9 @@
 var game;
 
 function init(){
-
-  game = new Phaser.Game(480, 320, Phaser.AUTO, null, {
+  /* Game : width, height, renderer, parent(dom id string)
+  https://phaser.io/docs/2.6.2/Phaser.Game.html */
+  game = new Phaser.Game(480, 320, Phaser.AUTO, 'game-area', {
     preload: preload,
     create: create,
     update: update
