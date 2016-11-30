@@ -154,8 +154,13 @@ function ballHitBrick(ball, brick){
   // }, this);
   // killTween.start(); /* killTween에 정의된대로 실행*/
   
-  game.add.tween(brick.scale).to({x:0,y:0}, 500, Phaser.Easing.Elastic.Out, true, 100); /* 단축식*/
+  var killTween = game.add.tween(brick.scale).to({x:0,y:0}, 500, Phaser.Easing.Elastic.Out, true, 100); /* 단축식*/
   /* to({x,y etc}, 변화까지 걸리는 시간, Elastic옵션속성, true사라짐/false안사라짐, 딜레이시간 후 진행)*/
+  killTween.onComplete.addOnce(function(){ /* tween이 완료될 때 호출 되는 핸들러*/
+      brick.kill();
+  }, this);
+  killTween.start();
+  
   score += 10;
   scoreText.setText('점수 : '+score);
   
