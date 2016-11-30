@@ -134,7 +134,19 @@ function ballHitBrick(ball, brick){
      첫인자 : 충돌하는 오브젝트
      두번째 : 외부 충격받는 오브젝트
   */
-  brick.kill(); /* 만약 ball.kill()하게되면 ball이 사라짐 */
+  // brick.kill(); /* 만약 ball.kill()하게되면 ball이 사라짐 */
+  
+  /* brick가 사라질 떄 tween 효과 주기*/
+  var killTween = game.add.tween(brick.scale); /* 해당 brick에 새 tween 지정 후 변수에 정의함*/ 
+  
+  killTween.to({x:0,y:0}, 2000, Phaser.Easing.Linear.None);
+  /* {scale takes a scale value, 1 being 100% of size, 0 being 0% of size etc}, time
+     to() 변화되는 오브젝트의 상태를 정의함 */
+  killTween.onComplete.addOnce(function(){ /* tween이 완료될 때 호출 되는 핸들러*/
+      brick.kill();
+  }, this);
+  killTween.start(); /* killTween에 정의된대로 실행*/
+  
   score += 10;
   scoreText.setText('점수 : '+score);
   
