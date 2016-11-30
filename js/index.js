@@ -3,6 +3,7 @@
 var game;
 var ball;
 var paddle;
+var bricks, newBrick, brickInfo;
 
 function init(){
   /* Game : width, height, renderer, parent(dom id string)
@@ -32,6 +33,7 @@ function preload(){
   
   game.load.image('ball', 'images/ball.png'); /* 이미지 불러오고 ball이란 id를 줌*/
   game.load.image('paddle', 'images/paddle.png');
+  game.load.image('brick', 'images/brick.png');
   
 }
 function create(){
@@ -57,6 +59,8 @@ function create(){
   
   paddle.body.immovable = true;
   /* 외부 오브젝트와 충격을 받아 반전을 일으킬 때 immovable가 true시 paddle는 반전안함*/
+  
+  initBricks();
 }
 
 function update(){
@@ -67,4 +71,20 @@ function update(){
   따라서 || game.world.width *0.5;를 기입하여 초기 x자리를 설정해줘야함.
   
   첫 로드 시 input.x가 아직 정의되지 않아 뒤에 || 에 따라 디폴트 위치 설정 가능하다함. */
+}
+
+function initBricks(){
+  brickInfo ={
+    width: 50,
+    height: 20,
+    count: {
+      row: 7,
+      col: 3
+    },
+    offset: {
+      top: 50,
+      left: 60
+    },
+    padding: 10
+  };
 }
