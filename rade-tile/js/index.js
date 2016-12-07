@@ -99,6 +99,9 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
         if(this.visitedTiles.length > 1 && row == this.visitedTiles[this.visitedTiles.length - 2].y && col == this.visitedTiles[this.visitedTiles.length - 2].x){
           /* 되돌아갔다면*/
 					console.log('이미 갔던길임 f-2 로우 : '+row + ' 컬럼 : '+col);
+          this.tilesArray[this.visitedTiles[this.visitedTiles.length - 1].y][this.visitedTiles[this.visitedTiles.length - 1].x].picked = false; /* 되돌아감으로 해당 타일을 선택하지 않은 타일로 조정*/
+          this.tilesArray[this.visitedTiles[this.visitedTiles.length - 1].y][this.visitedTiles[this.visitedTiles.length - 1].x].alpha = 1; /* 알파값을 1로 설정해줌 */
+          this.visitedTiles.pop(); /* visitedTiles란 어레이에 담겨진 마지막 요소 즉 마지막으로 푸쉬된 타일을 삭제함*/
         }
       }
     }
