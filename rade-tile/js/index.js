@@ -70,9 +70,21 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     var row = Math.floor((e.position.y - this.tileGroup.y) / game_data.tileSize);
     
     this.tilesArray[row][col].alpha = 0.5; /*그룹안에 속한 특정 tile의 알파값을 0.5로 조정*/
-    game.input.onDown.remove(this.pickTile, this);
+    game.input.onDown.remove(this.pickTile, this); /* 눌렀을 시 이후 해당 함수의 호출을 리무브함*/
+    game.input.onUp.add(this.releaseTile, this); /* 누른 상태에서 때었을 때 releaseTile 콜백 호출*/
   },
-  moveTile: function(){},
-  releaseTile: function(){},
+  moveTile: function(){
+  },
+  releaseTile: function(){ /* 타일을 눌른 상태에서 때었을 때 호출*/
+  	this.arrowsGroup.removeAll(true); /* arrows 그룹 내 모든걸 요소를 리무브함*/
+    
+    for(var i = 0; i < game_data.fieldSize; i++){
+    	for(var j = 0; j < game_data.fieldSize; j++){
+    		this.tilesArray[i][j].alpha = 1; /* 사이즈까지 루프를 돌려 모든 필드의 알파값을 1로 조정함*/
+  		}
+  	}
+    game.input.onUp.remove(this.releaseTile, this); /* 때었을 시 이후 해당 함수의 호출을 리무브함*/
+    game.input.onDown.add(this.pickTile, this); /* 땐 상태에서 다시 눌렀을 때 pickTile 콜백 호출*/
+  },
   addArrow: function(){}
 };
