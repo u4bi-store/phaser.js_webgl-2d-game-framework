@@ -29,9 +29,19 @@ function create() {
   ground.body.immovable = true; /* 어떠한 충격에 의해 방해를 안받기를 활성화*/
   
   var ledge = platforms.create(400, 400, 'ground'); /* 400,400 위치에생성*/
-  ledge.body.immovable = true;
-  ledge = platforms.create(-150, 250, 'ground');
-  ledge.body.immovable = true;
+  ledge.body.immovable = true; /* 어떠한 충격에 의해 방해를 안받기를 활성화*/
+  ledge = platforms.create(-150, 250, 'ground');  /* -150,250 위치에생성*/
+  ledge.body.immovable = true; /* 어떠한 충격에 의해 방해를 안받기를 활성화*/
+
+  player = game.add.sprite(32, game.world.height - 150, 'dude'); /* 캐릭터 에드*/
+  game.physics.arcade.enable(player); /* 캐릭터에게 물리 적용*/
+
+  player.body.bounce.y = 0.2; /* 캐릭터에게 충돌에 의한 튕김값 정의*/
+  player.body.gravity.y = 300; /* 캐릭터의 중력도 y값 정의*/
+  player.body.collideWorldBounds = true; /* 활동 경계면과의 충돌 감지*/
+  
+  player.animations.add('left', [0, 1, 2, 3], 10, true); /* 캐릭터의 애니메이션 정의 왼쪽*/
+  player.animations.add('right', [5, 6, 7, 8], 10, true); /* 캐릭터의 애니메이션 정의 오른쪽*/
 }
 
 function update() {
