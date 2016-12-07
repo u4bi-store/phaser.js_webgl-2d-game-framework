@@ -29,6 +29,7 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     game.scale.pageAlignHorizontally = true; /* 가로 정렬 */
     game.scale.pageAlignVertically = true; /* 세로 정렬 */
     this.initTile(); /* 타일 초기화함*/
+    game.input.onDown.add(this.pickTile, this);
   },
   update: function(){},
   initTile: function(){
@@ -62,7 +63,15 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     this.tilesArray[row][col] = theTile;
     this.tileGroup.add(theTile); /*tileGroup 그룹에 정의된 theTile를 에드함*/
   },
-  pickTile: function(){},
+  pickTile: function(e){ /* 타일을 눌렀을 때 호출*/
+    if(!this.tileGroup.getBounds().contains(e.position.x, e.position.y)) return;
+    /* 이벤트를 전달받은 x,y 값이 tileGroup 그룹내 지정된 컨테이너 내부가 아닐 경우 리턴 */                                                                                       
+    var col = Math.floor((e.position.x - this.tileGroup.x) / game_data.tileSize);
+    var row = Math.floor((e.position.y - this.tileGroup.y) / game_data.tileSize);
+    
+    this.tilesArray[row][col].alpha = 0.5; /*그룹안에 속한 특정 tile의 알파값을 0.5로 조정*/
+    game.input.onDown.remove(this.pickTile, this);
+  },
   moveTile: function(){},
   releaseTile: function(){},
   addArrow: function(){}
