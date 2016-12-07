@@ -38,14 +38,14 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     this.tileGroup = game.add.group(); /* 그룹화함*/
     this.arrowsGroup = game.add.group(); /* 그룹화함*/
     
-    var groupSize = game_data.tileSize * game_data.fieldSize; /*그룹내 x,y값 사이즈 리턴*/
-    this.tileGroup.x = (game.width - groupSize) / 2;
-    this.tileGroup.y = (game.height - groupSize) / 2;
-    this.arrowsGroup.x = (game.width - groupSize) / 2;
-    this.arrowsGroup.y = (game.height - groupSize) / 2;
+    var groupSize = game_data.tileSize * game_data.fieldSize; /* 그룹내 x,y값 사이즈 리턴*/
+    this.tileGroup.x = (game.width - groupSize) / 2; /* tileGroup 그룹의 x값에 캔버스 너비 - 종횡비 나누기 2*/
+    this.tileGroup.y = (game.height - groupSize) / 2; /* tileGroup 그룹의 y값에  캔버스 높이 - 종횡비 나누기 2*/
+    this.arrowsGroup.x = (game.width - groupSize) / 2; /* arrowsGroup 그룹의 x값에 캔버스 너비 - 종횡비 나누기 2*/
+    this.arrowsGroup.y = (game.height - groupSize) / 2; /* arrowsGroup 그룹의 y값에 캔버스 높이 - 종횡비 나누기 2*/
     
     for(var i = 0; i < game_data.fieldSize; i++){ /* 포문루프*/
-      this.tilesArray[i] = []; /* */
+      this.tilesArray[i] = []; /* 2중 선언*/
       for(var j = 0; j < game_data.fieldSize; j++){
         this.addTile(i, j); /*루프값에 따른 로우 컬럼을 매개변수로 주입하여 함수 호출*/
       }
@@ -54,13 +54,13 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
   addTile: function(row, col){ /* 로우 컬럼을 인자로 받아 어레이 정의*/
     var tileXPos = col * game_data.tileSize + game_data.tileSize / 2;
     var tileYPos = row * game_data.tileSize + game_data.tileSize / 2;
-    var theTile = game.add.sprite(tileXPos, tileYPos, "tiles");
+    var theTile = game.add.sprite(tileXPos, tileYPos, "tiles"); /* add. sprite x y id 생성 렌더링됨*/
     
     theTile.anchor.set(0.5); /* add한 지정 위치에 대한 x, y 앵커지정 */
-    theTile.coordinate = new Phaser.Point(col, row);
+    theTile.coordinate = new Phaser.Point(col, row); /* 포인터지정*/
     
     this.tilesArray[row][col] = theTile;
-    this.tileGroup.add(theTile);
+    this.tileGroup.add(theTile); /*tileGroup 그룹에 정의된 theTile를 에드함*/
   },
   pickTile: function(){},
   moveTile: function(){},
