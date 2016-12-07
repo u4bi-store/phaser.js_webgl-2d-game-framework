@@ -64,6 +64,9 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     this.tileGroup.add(theTile); /*tileGroup 그룹에 정의된 theTile를 에드함*/
   },
   pickTile: function(e){ /* 타일을 눌렀을 때 호출*/
+    this.visitedTiles = []; /* visitedTiles 어레이*/
+    this.visitedTiles.length = 0;
+    
     if(!this.tileGroup.getBounds().contains(e.position.x, e.position.y)) return;
     /* 이벤트를 전달받은 x,y 값이 tileGroup 그룹내 지정된 컨테이너 내부가 아닐 경우 리턴 */                                                                                       
     var col = Math.floor((e.position.x - this.tileGroup.x) / game_data.tileSize);
@@ -72,8 +75,23 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     this.tilesArray[row][col].alpha = 0.5; /*그룹안에 속한 특정 tile의 알파값을 0.5로 조정*/
     game.input.onDown.remove(this.pickTile, this); /* 눌렀을 시 이후 해당 함수의 호출을 리무브함*/
     game.input.onUp.add(this.releaseTile, this); /* 누른 상태에서 때었을 때 releaseTile 콜백 호출*/
+    game.input.addMoveCallback(this.moveTile, this); /* 누른 상태에서 무브를 하게 된다면 moveTile 콜백 호출*/
+    this.visitedTiles.push(this.tilesArray[row][col].coordinate); /* 포인터가 찍힌 타일을 푸쉬함*/
   },
-  moveTile: function(){
+  moveTile: function(e){
+    if(!this.tileGroup.getBounds().contains(e.position.x, e.position.y)) return;
+      
+    var col = Math.floor((e.position.x - this.tileGroup.x) / game_data.tileSize); /* 컬럼체크 */
+    var row = Math.floor((e.position.y - this.tileGroup.y) / game_data.tileSize); /* 로우체크 */
+    var distance = new Phaser.Point(e.position.x - this.tileGroup.x, e.position.y - this.tileGroup.y).distance(this.tilesArray[row][col]);
+    if(distance < game_data.tileSize * 0.4){ /*반경보다 넓다면*/
+      if(!this.tilesArray[row][col].picked && this.checkAdjacent(new Phaser.Point(col, row), this.visitedTiles[this.visitedTiles.length - 1])){
+        /* 처음 포인터가 찍히는 곳이라면*/
+        console.log('처음가는 길목 f-1 로우 : '+row + ' 컬럼 : '+col);
+      }else{/* 그게 아니라면*/
+        console.log('이미 갔던길임 f-2 로우 : '+row + ' 컬럼 : '+col);
+      }
+    }
   },
   releaseTile: function(){ /* 타일을 눌른 상태에서 때었을 때 호출*/
   	this.arrowsGroup.removeAll(true); /* arrows 그룹 내 모든걸 요소를 리무브함*/
@@ -85,6 +103,9 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
   	}
     game.input.onUp.remove(this.releaseTile, this); /* 때었을 시 이후 해당 함수의 호출을 리무브함*/
     game.input.onDown.add(this.pickTile, this); /* 땐 상태에서 다시 눌렀을 때 pickTile 콜백 호출*/
+  },
+  checkAdjacent: function(p1, p2){ /*p1과 p2가 서로 인접한지를 체크함*/
+    return (Math.abs(p1.x - p2.x) <= 1) && (Math.abs(p1.y - p2.y) <= 1);
   },
   addArrow: function(){}
 };
