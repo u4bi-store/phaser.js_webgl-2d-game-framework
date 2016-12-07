@@ -3,13 +3,16 @@ var game;
 var platforms;
 var player, stars;
 var cursors;
+var score, scoreText;
 
 function init(){
   game = new Phaser.Game(800, 600, Phaser.AUTO, 'game-area',{
     preload: preload,
     create: create,
     update: update
-  });  
+  });
+  
+  score =0; /* 스코어 초기화*/
 }
 
 function preload() {
@@ -54,6 +57,9 @@ function create() {
     star.body.gravity.y = 6; /* star의 중력도 y값 정의*/
     star.body.bounce.y = 0.7+Math.random()*0.2; /* star에게 충돌에 의한 튕김값 정의함*/
   }
+  
+  var text_info = { fontSize: '32px', fill: '#000' }; /* 데이터 정보 객체에 담음*/
+  scoreText = game.add.text(16, 16, '점수 : 0', text_info); /* scoreText는 text_info 주입하며 초기화시킴*/
 }
 
 function update() {
@@ -82,4 +88,6 @@ function update() {
 
 function collectStar (player, star) {
   star.kill(); /* starts 그룹안의 특정 요소 star를 지움*/
+  score += 10; /* 콜백이 호출되면 score 점수는 올려줌*/
+  scoreText.text = '점수 : ' + score; /* scoreText의 문구를 재설정함*/
 }
