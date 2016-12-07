@@ -57,6 +57,7 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     var tileYPos = row * game_data.tileSize + game_data.tileSize / 2;
     var theTile = game.add.sprite(tileXPos, tileYPos, "tiles"); /* add. sprite x y id 생성 렌더링됨*/
     
+    theTile.picked = false; /* 선택되어지지 않은 타일로 초기화함*/
     theTile.anchor.set(0.5); /* add한 지정 위치에 대한 x, y 앵커지정 */
     theTile.coordinate = new Phaser.Point(col, row); /* 포인터지정*/
     
@@ -73,6 +74,8 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     var row = Math.floor((e.position.y - this.tileGroup.y) / game_data.tileSize);
     
     this.tilesArray[row][col].alpha = 0.5; /*그룹안에 속한 특정 tile의 알파값을 0.5로 조정*/
+    this.tilesArray[row][col].picked = true; /* 현재 포인트 지정 타일 선택되어짐*/
+    
     game.input.onDown.remove(this.pickTile, this); /* 눌렀을 시 이후 해당 함수의 호출을 리무브함*/
     game.input.onUp.add(this.releaseTile, this); /* 누른 상태에서 때었을 때 releaseTile 콜백 호출*/
     game.input.addMoveCallback(this.moveTile, this); /* 누른 상태에서 무브를 하게 된다면 moveTile 콜백 호출*/
@@ -88,8 +91,15 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
       if(!this.tilesArray[row][col].picked && this.checkAdjacent(new Phaser.Point(col, row), this.visitedTiles[this.visitedTiles.length - 1])){
         /* 처음 포인터가 찍히는 곳이라면*/
         console.log('처음가는 길목 f-1 로우 : '+row + ' 컬럼 : '+col);
+        this.tilesArray[row][col].picked = true; /* 현재 포인트 지정 타일 선택되어짐*/
+        this.tilesArray[row][col].alpha = 0.5; /*그룹안에 속한 특정 tile의 알파값을 0.5로 조정*/
+        this.visitedTiles.push(this.tilesArray[row][col].coordinate); /* 포인터가 찍힌 타일을 푸쉬함*/
+        
       }else{/* 그게 아니라면*/
-        console.log('이미 갔던길임 f-2 로우 : '+row + ' 컬럼 : '+col);
+        if(this.visitedTiles.length > 1 && row == this.visitedTiles[this.visitedTiles.length - 2].y && col == this.visitedTiles[this.visitedTiles.length - 2].x){
+          /* 되돌아갔다면*/
+					console.log('이미 갔던길임 f-2 로우 : '+row + ' 컬럼 : '+col);
+        }
       }
     }
   },
@@ -99,9 +109,11 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     for(var i = 0; i < game_data.fieldSize; i++){
     	for(var j = 0; j < game_data.fieldSize; j++){
     		this.tilesArray[i][j].alpha = 1; /* 사이즈까지 루프를 돌려 모든 필드의 알파값을 1로 조정함*/
+        this.tilesArray[i][j].picked = false; /* 모든 필드의 타일들을 선택되어지지 않은 타일로 조정함*/
   		}
   	}
-    game.input.onUp.remove(this.releaseTile, this); /* 때었을 시 이후 해당 함수의 호출을 리무브함*/
+    game.input.onUp.remove(this.releaseTile, this); /* 때었을 시 이후 해당 함수의 호출 이벤트를 제거함*/
+    game.input.deleteMoveCallback(this.moveTile, this); /* 무브하고 있다 때었을 시 해당함수의 호출 이벤트를 제거함*/
     game.input.onDown.add(this.pickTile, this); /* 땐 상태에서 다시 눌렀을 때 pickTile 콜백 호출*/
   },
   checkAdjacent: function(p1, p2){ /*p1과 p2가 서로 인접한지를 체크함*/
