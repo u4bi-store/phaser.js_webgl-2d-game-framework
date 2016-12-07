@@ -45,4 +45,5 @@ function create() {
 }
 
 function update() {
+  var gitPlatform = game.physics.arcade.collide(player, platforms); /* 플레이어와 플랫폼스안의 요소들과 충돌시 감지*/
 }
