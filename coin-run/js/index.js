@@ -1,6 +1,7 @@
 /* coin-run index js*/
 var game;
 var platforms;
+var cursors;
 
 function init(){
   game = new Phaser.Game(800, 600, Phaser.AUTO, 'game-area',{
@@ -15,6 +16,7 @@ function preload() {
   game.load.image('ground', 'images/platform.png');
   game.load.image('star', 'images/star.png');
   game.load.spritesheet('dude', 'images/dude.png', 32, 48);
+  cursors = game.input.keyboard.createCursorKeys();
 }
 
 function create() {
@@ -45,5 +47,22 @@ function create() {
 }
 
 function update() {
-  var gitPlatform = game.physics.arcade.collide(player, platforms); /* 플레이어와 플랫폼스안의 요소들과 충돌시 감지*/
+  var hitPlatform = game.physics.arcade.collide(player, platforms); /* 플레이어와 플랫폼스안의 요소들과 충돌시 감지*/
+  player.body.velocity.x = 0; /* 캐릭터 속력의 x값을 0으로 초기화*/
+
+  if(cursors.left.isDown){ /* cursors에 정의된 메서드내의 left를 누른 상태일시*/
+      player.body.velocity.x = -150; /* 속력의 x값을 -150으로 설정함*/
+      player.animations.play('left'); /* 정의된 애니메이션인 left를 호출함*/
+  }else if (cursors.right.isDown){ /* right를 누른 상태일시*/
+      player.body.velocity.x = 150; /* 속력의 x값을 150으로 설정함*/
+      player.animations.play('right'); /* 정의된 애니메이션인 right를 호출함*/
+  }else{ /*아무것도 아니면 */
+      player.animations.stop(); /* 호출중인 애니메이션을 멈춰줌*/
+      player.frame = 4; /* 캐릭터에게 주입된 스프라이트 시트의 4번째 프레임을 보여줌*/
+  }
+  
+  if (cursors.up.isDown && player.body.touching.down && hitPlatform){
+    /* 위쪽키를 누른 상태에서 플랫폼과 캐릭터간의 충돌이 감지된 상태에서 그 충돌이 캐릭터의 바디 아래쪽이라면*/
+      player.body.velocity.y = -350; /* 속력의 y값을 -350으로 설정함*/
+  }
 }
