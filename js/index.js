@@ -11,7 +11,7 @@ var bounce, intro;
 
 function init(){
   console.log('ok game');
-  game = new Phaser.Game(480, 320, Phaser.AUTO, 'game-area', {
+  game = new Phaser.Game(800, 500, Phaser.AUTO, 'game-area', {
     preload: preload,
     create: create,
     update: update
@@ -27,7 +27,7 @@ function preload(){
   game.scale.pageAlignVertically = true;
   //game.stage.backgroundColor = 'rgba(0,0,0,0.44)';
 
-  game.load.image('background', 'images/background.png');
+  game.load.image('background', 'images/sky.png');
   game.load.image('paddle', 'images/paddle.png');
   game.load.spritesheet('ball', 'images/spritesheet.png', 25, 26);
   game.load.spritesheet('brick', 'images/brick_spritesheet.png', 23, 27);
@@ -49,7 +49,7 @@ function create(){
   ball.anchor.set(0.5, 2);
   game.physics.enable(ball, Phaser.Physics.ARCADE);
   ball.body.collideWorldBounds = true; 
-  ball.body.bounce.set(1);
+  ball.body.bounce.set(1.1);
   ball.checkWorldBounds = true; 
   ball.events.onOutOfBounds.add(ballLeaveScreen, this);
 
@@ -60,7 +60,7 @@ function create(){
   paddle.body.immovable = true;
   initBricks();
 
-  var textStyle = { font: '16px Consolas', fill: '#fff' };
+  var textStyle = { font: '30px NanumGothic', fill: '#fff' };
 
   scoreText = game.add.text(5, 5, '점수 : 0', textStyle);
   livesText = game.add.text(game.world.width-5, 5, '목숨 : '+lives, textStyle);
@@ -86,14 +86,14 @@ function initBricks(){
     width: 30,
     height: 20,
     count: {
-      row: 8,
-      col: 4
+      row: 17,
+      col: 7
     },
     offset: {
       top: 20,
-      left: 55
+      left: 35
     },
-    padding: 20
+    padding: 15
   };
 
   bricks = game.add.group();
@@ -168,6 +168,9 @@ function ballLeaveScreen(){
 
 function ballHitPaddle(ball, paddle){
   // ball.animations.play('ballEffect1');
+ if(ball.body.velocity.y < -700){
+    ball.body.velocity.y = 600;
+  }
   ball.body.velocity.x = -1*5*(paddle.x-ball.x);
 }
 
