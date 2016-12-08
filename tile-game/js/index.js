@@ -128,7 +128,8 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
       this.tilesArray[this.visitedTiles[i].y][this.visitedTiles[i].x] = null; /* 이후 null값으로 초기화함*/
     }
     
-    for(var i = 0; i < game_data.fieldSize; i++){      
+    for(var i = game_data.fieldSize -1; i >= 0; i--){ /* 로우랭쓰-1에서 i를 하나씩줄임*/
+      /* i가 0보다 높거나 같을때까지 루프돌림*/
     	for(var j = 0; j < game_data.fieldSize; j++){
         
         if(this.tilesArray[i][j] != null){
