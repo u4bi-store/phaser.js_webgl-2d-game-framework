@@ -63,7 +63,8 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     
     this.tilesArray[row][col] = theTile;
     var text = game.add.text(-game_data.tileSize / 2.8, 0, "로" + theTile.coordinate.y.toString() + ", 컬" + theTile.coordinate.x.toString(), {fill: "#000", font:"bold 30px Arial"});
-    theTile.addChild(text);
+    /* text 정의 (windth, height , 'string', css style) */
+    theTile.addChild(text); /*정의된 text를 theTile에 에드함*/
     this.tileGroup.add(theTile); /*tileGroup 그룹에 정의된 theTile를 에드함*/
   },
   pickTile: function(e){ /* 타일을 눌렀을 때 호출*/
@@ -82,6 +83,7 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     game.input.onUp.add(this.releaseTile, this); /* 누른 상태에서 때었을 때 releaseTile 콜백 호출*/
     game.input.addMoveCallback(this.moveTile, this); /* 누른 상태에서 무브를 하게 된다면 moveTile 콜백 호출*/
     this.visitedTiles.push(this.tilesArray[row][col].coordinate); /* 포인터가 찍힌 타일을 푸쉬함*/
+    console.log("첫픽 로: " + row + " 컬: " + col);
   },
   moveTile: function(e){
     if(!this.tileGroup.getBounds().contains(e.position.x, e.position.y)) return;
@@ -92,22 +94,22 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     if(distance < game_data.tileSize * 0.4){ /*반경보다 넓다면*/
       if(!this.tilesArray[row][col].picked && this.checkAdjacent(new Phaser.Point(col, row), this.visitedTiles[this.visitedTiles.length - 1])){
         /* 처음 포인터가 찍히는 곳이라면*/
-        console.log('처음가는 길목 f-1 로우 : '+row + ' 컬럼 : '+col);
         this.tilesArray[row][col].picked = true; /* 현재 포인트 지정 타일 선택되어짐*/
         this.tilesArray[row][col].alpha = 0.5; /*그룹안에 속한 특정 tile의 알파값을 0.5로 조정*/
         this.visitedTiles.push(this.tilesArray[row][col].coordinate); /* 포인터가 찍힌 타일을 푸쉬함*/
         this.addArrow(); /* addArrow 함수호출*/
+        console.log("고픽 로: " + row + " 컬: " + col);
         
       }else{/* 그게 아니라면*/
         if(this.visitedTiles.length > 1 && row == this.visitedTiles[this.visitedTiles.length - 2].y && col == this.visitedTiles[this.visitedTiles.length - 2].x){
           /* 되돌아갔다면*/
-          console.log('이미 갔던길임 f-2 로우 : '+row + ' 컬럼 : '+col);
           this.tilesArray[this.visitedTiles[this.visitedTiles.length - 1].y][this.visitedTiles[this.visitedTiles.length - 1].x].picked = false; /* 되돌아감으로 해당 타일을 선택하지 않은 타일로 조정*/
           this.tilesArray[this.visitedTiles[this.visitedTiles.length - 1].y][this.visitedTiles[this.visitedTiles.length - 1].x].alpha = 1; /* 알파값을 1로 설정해줌 */
           this.visitedTiles.pop(); /* visitedTiles란 어레이에 담겨진 마지막 요소 즉 마지막으로 푸쉬된 타일을 삭제함*/
           
           this.arrowsArray[this.arrowsArray.length - 1].destroy(); /* addArray의 랭쓰 -1 요소 삭제*/
           this.arrowsArray.pop(); /* arrowsArray란 어레이에 담겨진 마지막 요소 즉 마지막으로 푸쉬된 화살표를 제외함*/
+          console.log("빽픽 로: " + row + " 컬: " + col);
         }
       }
     }
@@ -116,7 +118,11 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
   releaseTile: function(){ /* 타일을 눌른 상태에서 때었을 때 호출*/
   	this.arrowsGroup.removeAll(true); /* arrows 그룹 내 모든걸 요소를 리무브함*/
     
-    for(var i = 0; i < game_data.fieldSize; i++){
+    for(var i = 0; i < this.visitedTiles.length; i++){
+      console.log("리무브 됨[" + this.visitedTiles[i].y + "][" + this.visitedTiles[i].x + "]");
+    }
+    
+    for(var i = 0; i < game_data.fieldSize; i++){      
     	for(var j = 0; j < game_data.fieldSize; j++){
     		this.tilesArray[i][j].alpha = 1; /* 사이즈까지 루프를 돌려 모든 필드의 알파값을 1로 조정함*/
         this.tilesArray[i][j].picked = false; /* 모든 필드의 타일들을 선택되어지지 않은 타일로 조정함*/
