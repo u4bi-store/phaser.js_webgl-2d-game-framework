@@ -4,7 +4,7 @@ var game, game_data;
 var radeTile = function(){}; /* 클래스로 초기화*/
 
 function init(){
-  game_data = {width: 705, height: 700, tileSize: 140, fieldSize: 5};
+  game_data = {width: 1680, height: 1680, tileSize: 140, fieldSize: 12};
   
   game = new Phaser.Game(game_data.width, game_data.height);
   game.state.add("radeTile", radeTile); /* 클래스 정의후 타입줌*/
@@ -13,7 +13,7 @@ function init(){
 
 radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
   preload : function(){
-    game.stage.backgroundColor = 0x333333; /* css 문법 이용해 컬러 변경 가능 'rgba(245, 245, 245, 1)' '#ffff00' */
+    game.stage.backgroundColor = '0x333333'; /* css 문법 이용해 컬러 변경 가능 'rgba(245, 245, 245, 1)' '#ffff00' */
     game.load.image("tiles", "images/tiles.png"); /* 이미지 불러오고 titles이란 id를 줌*/
     game.load.spritesheet("arrows", "images/arrows.png", 420, 420); /* 스프라이트시트 이미지 불러오고 arrows이란 id를 줌*/
   },
