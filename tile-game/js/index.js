@@ -12,7 +12,9 @@ function init(){
       rows: 6,
       cols: 5
     },
-    fallSpeed: 250
+    fallSpeed: 250,
+    diagonal: true, /*대각처리 허용true/비허용false*/
+    colors: [0xff0000, 0x00ff00, 0x0000ff,0xffff00]
   };
   
   game = new Phaser.Game(game_data.width, game_data.height);
@@ -53,10 +55,10 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     this.arrowsGroup.x = this.tileGroup.x; /* x값을 주입함*/
     this.arrowsGroup.y = this.tileGroup.y; /* y값을 주입함*/
 
-    var tileMask = game.add.graphics(this.tileGroup.x, this.tileGroup.y);
-    tileMask.beginFill(0xffffff);
-    tileMask.drawRect(0, 0, game_data.tileSize * game_data.fieldSize.cols, game_data.tileSize * game_data.fieldSize.rows);
-    this.tileGroup.mask = tileMask;
+    var tileMask = game.add.graphics(this.tileGroup.x, this.tileGroup.y); /*해당 영역 그래픽처리*/
+    tileMask.beginFill(0xffffff); /*초기화 색상*/
+    tileMask.drawRect(0, 0, game_data.tileSize * game_data.fieldSize.cols, game_data.tileSize * game_data.fieldSize.rows); /* 원을 그림*/
+    this.tileGroup.mask = tileMask; /*정의된 타일 주입*/
 
     for(var i = 0; i < game_data.fieldSize.rows; i++){ /* 포문루프 열만큼*/
       this.tilesArray[i] = []; /* 2중 선언*/
@@ -65,7 +67,7 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
       }
     }
     
-    this.removedTiles = [];
+    this.removedTiles = []; /*비지블 뻘스 즉 리무브된 타일들 어레이*/
   },
   addTile: function(row, col){ /* 로우 컬럼을 인자로 받아 어레이 정의*/
     var tileXPos = col * game_data.tileSize + game_data.tileSize / 2;
@@ -75,6 +77,9 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     theTile.picked = false; /* 선택되어지지 않은 타일로 초기화함*/
     theTile.anchor.set(0.5); /* add한 지정 위치에 대한 x, y 앵커지정 */
     theTile.coordinate = new Phaser.Point(col, row); /* 포인터지정*/
+    
+    theTile.value = Phaser.ArrayUtils.getRandomItem(game_data.colors); /* 랜쓰돌려 랜덤 컬러 정의*/
+    theTile.tint = theTile.value; /* tint에 value값 주입*/
     
     this.tilesArray[row][col] = theTile;
     var text = game.add.text(-game_data.tileSize / 2.8, 0, "로" + theTile.coordinate.y.toString() + ", 컬" + theTile.coordinate.x.toString(), {fill: "#000", font:"bold 30px Arial"});
@@ -93,6 +98,7 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     
     this.tilesArray[row][col].alpha = 0.5; /*그룹안에 속한 특정 tile의 알파값을 0.5로 조정*/
     this.tilesArray[row][col].picked = true; /* 현재 포인트 지정 타일 선택되어짐*/
+    this.pickedColor = this.tilesArray[row][col].value; /* 포인터 지정된 타일의 컬러 벨류값을 저장함*/
     
     game.input.onDown.remove(this.pickTile, this); /* 눌렀을 시 이후 해당 함수의 호출을 리무브함*/
     game.input.onUp.add(this.releaseTile, this); /* 누른 상태에서 때었을 때 releaseTile 콜백 호출*/
@@ -107,7 +113,7 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     var row = Math.floor((e.position.y - this.tileGroup.y) / game_data.tileSize); /* 로우체크 */
     var distance = new Phaser.Point(e.position.x - this.tileGroup.x, e.position.y - this.tileGroup.y).distance(this.tilesArray[row][col]);
     
-    if(distance < game_data.tileSize * 0.4){ /*반경보다 넓다면*/
+    if(distance < game_data.tileSize * 0.4 &&  this.tilesArray[row][col].value == this.pickedColor){ /* 반경보다 넓고 무브되어 찍힌 타일의 컬러가 처음 픽된 타일의 컬러와 동일할때*/
       if(!this.tilesArray[row][col].picked && this.checkAdjacent(new Phaser.Point(col, row), this.visitedTiles[this.visitedTiles.length - 1])){
         /* 처음 포인터가 찍히는 곳이라면*/
         this.tilesArray[row][col].picked = true; /* 현재 포인트 지정 타일 선택되어짐*/
@@ -142,7 +148,8 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     console.log("--라인--");
   },
   checkAdjacent: function(p1, p2){ /*p1과 p2가 서로 인접한지를 체크함*/
-    return (Math.abs(p1.x - p2.x) <= 1) && (Math.abs(p1.y - p2.y) <= 1);
+    if(game_data.diagonal) return (Math.abs(p1.x - p2.x) <= 1) && (Math.abs(p1.y - p2.y) <= 1);
+    else return (Math.abs(p1.x - p2.x) == 1 && p1.y - p2.y == 0) || (Math.abs(p1.y - p2.y) == 1 && p1.x - p2.x == 0);
   },
   addArrow: function(){ /* 화살표 스프라이트시트 이미지를 현재 타일에 에드함*/
     var fromTile = this.visitedTiles[this.visitedTiles.length - 2]; /* 현재 타일 이전 요소의 폼 리턴*/
@@ -222,11 +229,12 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
           var tileYPos = -j * game_data.tileSize + game_data.tileSize / 2; /* 루프가 돌아지는 타일의 y값을 리턴*/
 
 					var theTile = this.removedTiles.pop();
-          theTile.position = new Phaser.Point(tileXPos, tileYPos);
-          theTile.visible = true;
-          theTile.alpha = 1;
-          theTile.picked = false;
-          
+          theTile.position = new Phaser.Point(tileXPos, tileYPos); /*포인터에 지정된 pos를 주입*/
+          theTile.visible = true; /* 비저블은 트루 보이게함*/
+          theTile.alpha = 1; /*알파값을 1로 돌리고*/
+          theTile.picked = false; /* 해당 타일을 선택하지 않은 타일로 조정*/
+          theTile.value = Phaser.ArrayUtils.getRandomItem(game_data.colors); /* 랜쓰돌려 랜덤 컬러 정의*/
+          theTile.tint = theTile.value; /* tint에 value값 주입*/
           var tween = game.add.tween(theTile).to(
             { y: theTile.y + holes * game_data.tileSize}, /* theTile의 y와 중첩된 열과 곱해진 타일 사이즈만큼의 y로지정*/
             game_data.fallSpeed, /*faillSpeed에 정의된 속도만큼*/
