@@ -4,7 +4,16 @@ var game, game_data;
 var tileGame = function(){}; /* 클래스로 초기화*/
 
 function init(){
-  game_data = {width: 1680, height: 1680, tileSize: 140, fieldSize: 12,fallSpeed: 250};
+  game_data = {
+    width: 800,
+    height: 1400,
+    tileSize: 140,
+    fieldSize: {
+      rows: 6,
+      cols: 5
+    },
+    fallSpeed: 250
+  };
   
   game = new Phaser.Game(game_data.width, game_data.height);
   game.state.add("tileGame", tileGame); /* 클래스 정의후 타입줌*/
@@ -39,18 +48,24 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     this.tileGroup = game.add.group(); /* 그룹화함*/
     this.arrowsGroup = game.add.group(); /* 그룹화함*/
     
-    var groupSize = game_data.tileSize * game_data.fieldSize; /* 그룹내 x,y값 사이즈 리턴*/
-    this.tileGroup.x = (game.width - groupSize) / 2; /* tileGroup 그룹의 x값에 캔버스 너비 - 종횡비 나누기 2*/
-    this.tileGroup.y = (game.height - groupSize) / 2; /* tileGroup 그룹의 y값에  캔버스 높이 - 종횡비 나누기 2*/
-    this.arrowsGroup.x = (game.width - groupSize) / 2; /* arrowsGroup 그룹의 x값에 캔버스 너비 - 종횡비 나누기 2*/
-    this.arrowsGroup.y = (game.height - groupSize) / 2; /* arrowsGroup 그룹의 y값에 캔버스 높이 - 종횡비 나누기 2*/
-    
-    for(var i = 0; i < game_data.fieldSize; i++){ /* 포문루프*/
+    this.tileGroup.x = (game.width - game_data.tileSize * game_data.fieldSize.cols) / 2; /* 타일 사이즈 곱하기 행의 수 나누기 2*/
+    this.tileGroup.y = (game.height - game_data.tileSize * game_data.fieldSize.rows) / 2; /* 타일 사이즈 곱하기 열의 수 나누기 2*/
+    this.arrowsGroup.x = this.tileGroup.x; /* x값을 주입함*/
+    this.arrowsGroup.y = this.tileGroup.y; /* y값을 주입함*/
+
+    var tileMask = game.add.graphics(this.tileGroup.x, this.tileGroup.y);
+    tileMask.beginFill(0xffffff);
+    tileMask.drawRect(0, 0, game_data.tileSize * game_data.fieldSize.cols, game_data.tileSize * game_data.fieldSize.rows);
+    this.tileGroup.mask = tileMask;
+
+    for(var i = 0; i < game_data.fieldSize.rows; i++){ /* 포문루프 열만큼*/
       this.tilesArray[i] = []; /* 2중 선언*/
-      for(var j = 0; j < game_data.fieldSize; j++){
+      for(var j = 0; j < game_data.fieldSize.cols; j++){ /* 내부 포문은 행만큼*/
         this.addTile(i, j); /*루프값에 따른 로우 컬럼을 매개변수로 주입하여 함수 호출*/
       }
     }
+    
+    this.removedTiles = [];
   },
   addTile: function(row, col){ /* 로우 컬럼을 인자로 받아 어레이 정의*/
     var tileXPos = col * game_data.tileSize + game_data.tileSize / 2;
@@ -91,6 +106,7 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     var col = Math.floor((e.position.x - this.tileGroup.x) / game_data.tileSize); /* 컬럼체크 */
     var row = Math.floor((e.position.y - this.tileGroup.y) / game_data.tileSize); /* 로우체크 */
     var distance = new Phaser.Point(e.position.x - this.tileGroup.x, e.position.y - this.tileGroup.y).distance(this.tilesArray[row][col]);
+    
     if(distance < game_data.tileSize * 0.4){ /*반경보다 넓다면*/
       if(!this.tilesArray[row][col].picked && this.checkAdjacent(new Phaser.Point(col, row), this.visitedTiles[this.visitedTiles.length - 1])){
         /* 처음 포인터가 찍히는 곳이라면*/
@@ -118,86 +134,12 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
   releaseTile: function(){ /* 타일을 눌른 상태에서 때었을 때 호출*/
     game.input.onUp.remove(this.releaseTile, this); /* 때었을 시 이후 해당 함수의 호출 이벤트를 제거함*/
     game.input.deleteMoveCallback(this.moveTile, this); /* 무브하고 있다 때었을 시 해당함수의 호출 이벤트를 제거함*/
-    game.input.onDown.add(this.pickTile, this); /* 땐 상태에서 다시 눌렀을 때 pickTile 콜백 호출*/
     
-    this.arrowsGroup.removeAll(true); /* arrows 그룹 내 모든걸 요소를 리무브함*/
-    
-    for(var i = 0; i < this.visitedTiles.length; i++){ /* 픽되서 visitedTiles 어레이에 들어간 랭쓰만큼 포문 돌림*/
-      console.log("리무브 됨[" + this.visitedTiles[i].y + "][" + this.visitedTiles[i].x + "]");
-      this.tilesArray[this.visitedTiles[i].y][this.visitedTiles[i].x].destroy(); /*해당 배열내 속한 타일 삭제*/
-      this.tilesArray[this.visitedTiles[i].y][this.visitedTiles[i].x] = null; /* 이후 null값으로 초기화함*/
-    }
-    
-    for(var i = game_data.fieldSize -1; i >= 0; i--){ /* 로우랭쓰-1에서 i를 하나씩줄임*/
-      /* i가 0보다 높거나 같을때까지 루프돌림*/
-    	for(var j = 0; j < game_data.fieldSize; j++){
-        
-        if(this.tilesArray[i][j] != null){
-          var holes = this.holesBelow(i, j);
-          if(holes > 0){
-            console.log('holes low: '+holes);
-            var coordinate = new Phaser.Point(this.tilesArray[i][j].coordinate.x, this.tilesArray[i][j].coordinate.y); /* 최상단 타일 포인터잡아줌*/
-            var destination = new Phaser.Point(j, i + holes); /* 리무브되는 타일 포인터잡아줌*/
-            console.log("최상단 타일 로: " + coordinate.y + " 컬: " + coordinate.x + "이 이동한곳 로: " + destination.y + " 컬: " + destination.x +'')
-
-            var tween = game.add.tween(this.tilesArray[i][j]).to(
-              { y: this.tilesArray[i][j].y + holes * game_data.tileSize}, /* 타일 사이즈만큼 y값을*/
-              game_data.fallSpeed, /*faillSpeed에 정의된 속도만큼*/
-              Phaser.Easing.Linear.None, /* 속성에 걸맞는 이벤트를 줌*/
-              true /* 트윈 이벤트 활성화*/
-            );
-            
-            tween.onComplete.add(function(s){}, this); /* 트윈을 진행함 즉 떨굼*/
-            
-            this.tilesArray[destination.y][destination.x] = this.tilesArray[i][j]; /* 트윈되어 비어있는 곳을 주입하여 보충해줌*/
-            console.log("보충됨[" + destination.y + "][" + destination.x + "]");
-            
-            this.tilesArray[coordinate.y][coordinate.x] = null; /* 널로 초기화*/
-            console.log("삭제됨[" + coordinate.y + "][" + coordinate.x + "]");
-            
-            this.tilesArray[destination.y][destination.x].coordinate = new Phaser.Point(destination.x, destination.y); /* 주입한후*/
-            this.tilesArray[destination.y][destination.x].children[0].text = "로" + destination.y + ", 컬" + destination.x;  /* 타일내 텍스트 변경*/
- 
-          }
-        }
-        
-  		}
-  	}
-
-    for(var i = 0; i < game_data.fieldSize; i++){
-      var holes = this.holesInCol(i);
-      if(holes > 0){
-        console.log('holes col: '+holes);
-        for(var j = 1; j <= holes; j++){
-
-          var tileXPos = i * game_data.tileSize + game_data.tileSize / 2; /* 루프가 돌아지는 타일의 x값을 리턴*/
-          var tileYPos = -j * game_data.tileSize + game_data.tileSize / 2; /* 루프가 돌아지는 타일의 y값을 리턴*/
-
-          var theTile = game.add.sprite(tileXPos, tileYPos, "tiles"); /* 타일의 스프라이트 이미지를 지정*/
-          theTile.anchor.set(0.5); /* add한 지정 위치에 대한 x, y 앵커지정 */
-          theTile.picked = false; /* 선택되어지지 않은 타일로 초기화함*/
-          
-          var tween = game.add.tween(theTile).to(
-            { y: theTile.y + holes * game_data.tileSize}, /* theTile의 y와 중첩된 열과 곱해진 타일 사이즈만큼의 y로지정*/
-            game_data.fallSpeed, /*faillSpeed에 정의된 속도만큼*/
-            Phaser.Easing.Linear.None, /* 속성에 걸맞는 이벤트를 줌*/
-            true  /* 트윈 이벤트 활성화*/
-          );
-
-          theTile.coordinate = new Phaser.Point(i, holes - j);
-          this.tilesArray[holes - j][i] = theTile;
-          var text = game.add.text(-game_data.tileSize / 2.8, 0, "로" + theTile.coordinate.y.toString() + ", 컬" + theTile.coordinate.x.toString(), {fill: "#000", font:"bold 30px Arial"});
-           /* 타일내 텍스트 정보 초기화해줌*/
-          
-          console.log("생성된 로: " + theTile.coordinate.y.toString() + " 컬: " + theTile.coordinate.x.toString());
-          console.log("에드됨[" + (holes - j).toString() + "][" + i + "]");
-          theTile.addChild(text);  /* 타일내 텍스트 변경*/
-
-          this.tileGroup.add(theTile);
-        }
-      }
-    } 
-
+    //game.input.onDown.add(this.pickTile, this); /* 땐 상태에서 다시 눌렀을 때 pickTile 콜백 호출*/
+    this.clearPath(); /* 주소 정리함*/
+    this.tilesFallDown(); /* 아래로 떨어트림*/
+    this.placeNewTiles(); /* 타일을 새로 생성함*/
+    console.log("--라인--");
   },
   checkAdjacent: function(p1, p2){ /*p1과 p2가 서로 인접한지를 체크함*/
     return (Math.abs(p1.x - p2.x) <= 1) && (Math.abs(p1.y - p2.y) <= 1);
@@ -217,21 +159,108 @@ tileGame.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
       /* 그게 아닐시에*/
       arrow.angle = 90 * (tileDiff.x + 1); /* 앵글 90 곱하기 tilediff의 y값*/
       
-      if(tileDiff.y != 0) arrow.frame = 1; /* 정의된 tilediff의 y값이 0이 아니라면 스프라이트 시트의 1번 이미지를 폼에 주입*/
-      if(tileDiff.y + tileDiff.x == 0) arrow.angle -= 90; /* tileDiff의 x더하기 y값이 즉 0이라면 폼내 배치되는 화살표 이미지의 앵글값에 90을 빼줌 */
+      if(tileDiff.y != 0){
+        arrow.frame = 1; /* 정의된 tilediff의 y값이 0이 아니라면 스프라이트 시트의 1번 이미지를 폼에 주입*/
+        if(tileDiff.y + tileDiff.x == 0) arrow.angle -= 90; /* tileDiff의 x더하기 y값이 즉 0이라면 폼내 배치되는 화살표 이미지의 앵글값에 90을 빼줌 */
+      }
 		}
     this.arrowsArray.push(arrow); /*arrowArray 어레이에 현재 정의된 arrow 객체를 푸쉬함*/
   },
+  clearPath: function(){
+    this.arrowsGroup.removeAll(true); /* arrows 그룹 내 모든걸 요소를 리무브함*/
+    for(var i = 0; i < this.visitedTiles.length; i++){ /* 픽되서 visitedTiles 어레이에 들어간 랭쓰만큼 포문 돌림*/
+      console.log("리무브 됨[" + this.visitedTiles[i].y + "][" + this.visitedTiles[i].x + "]");
+      this.tilesArray[this.visitedTiles[i].y][this.visitedTiles[i].x].visible = false; /*해당 배열내 속한 타일 숨김*/
+      this.removedTiles.push(this.tilesArray[this.visitedTiles[i].y][this.visitedTiles[i].x]); /* 해당 타일 리무브 어레이에 푸쉬*/
+      this.tilesArray[this.visitedTiles[i].y][this.visitedTiles[i].x] = null; /* 이후 null값으로 초기화함*/
+    }
+  },
+  tilesFallDown: function(){
+    for(var i = game_data.fieldSize.cols -1; i >= 0; i--){ /* 로우랭쓰-1에서 i를 하나씩줄임*/
+      /* i가 0보다 높거나 같을때까지 루프돌림*/
+      for(var j = 0; j < game_data.fieldSize.rows; j++){
+
+        if(this.tilesArray[i][j] != null){
+          var holes = this.holesBelow(i, j);
+          if(holes > 0){
+            console.log('holes low: '+holes);
+            var coordinate = new Phaser.Point(this.tilesArray[i][j].coordinate.x, this.tilesArray[i][j].coordinate.y); /* 최상단 타일 포인터잡아줌*/
+            var destination = new Phaser.Point(j, i + holes); /* 리무브되는 타일 포인터잡아줌*/
+            console.log("최상단 타일 로: " + coordinate.y + " 컬: " + coordinate.x + "이 이동한곳 로: " + destination.y + " 컬: " + destination.x +'')
+
+            var tween = game.add.tween(this.tilesArray[i][j]).to(
+              { y: this.tilesArray[i][j].y + holes * game_data.tileSize}, /* 타일 사이즈만큼 y값을*/
+              game_data.fallSpeed, /*faillSpeed에 정의된 속도만큼*/
+              Phaser.Easing.Linear.None, /* 속성에 걸맞는 이벤트를 줌*/
+              true /* 트윈 이벤트 활성화*/
+            );
+            tween.onComplete.add(this.nextPick, this); /* 트윈을 진행함 즉 떨굼*/
+
+            this.tilesArray[destination.y][destination.x] = this.tilesArray[i][j]; /* 트윈되어 비어있는 곳을 주입하여 보충해줌*/
+            console.log("보충됨[" + destination.y + "][" + destination.x + "]");
+
+            this.tilesArray[coordinate.y][coordinate.x] = null; /* 널로 초기화*/
+            console.log("삭제됨[" + coordinate.y + "][" + coordinate.x + "]");
+
+            this.tilesArray[destination.y][destination.x].coordinate = new Phaser.Point(destination.x, destination.y); /* 주입한후*/
+            this.tilesArray[destination.y][destination.x].children[0].text = "로" + destination.y + ", 컬" + destination.x;  /* 타일내 텍스트 변경*/
+
+          }
+        }
+
+      }
+    }
+  },
+  placeNewTiles: function(){
+    for(var i = 0; i < game_data.fieldSize.cols; i++){
+      var holes = this.holesInCol(i);
+      if(holes > 0){
+        console.log('holes col: '+holes);
+        for(var j = 1; j <= holes; j++){
+
+          var tileXPos = i * game_data.tileSize + game_data.tileSize / 2; /* 루프가 돌아지는 타일의 x값을 리턴*/
+          var tileYPos = -j * game_data.tileSize + game_data.tileSize / 2; /* 루프가 돌아지는 타일의 y값을 리턴*/
+
+					var theTile = this.removedTiles.pop();
+          theTile.position = new Phaser.Point(tileXPos, tileYPos);
+          theTile.visible = true;
+          theTile.alpha = 1;
+          theTile.picked = false;
+          
+          var tween = game.add.tween(theTile).to(
+            { y: theTile.y + holes * game_data.tileSize}, /* theTile의 y와 중첩된 열과 곱해진 타일 사이즈만큼의 y로지정*/
+            game_data.fallSpeed, /*faillSpeed에 정의된 속도만큼*/
+            Phaser.Easing.Linear.None, /* 속성에 걸맞는 이벤트를 줌*/
+            true  /* 트윈 이벤트 활성화*/
+          );
+          tween.onComplete.add(this.nextPick, this);
+
+          theTile.coordinate = new Phaser.Point(i, holes - j);
+          this.tilesArray[holes - j][i] = theTile;
+          
+           theTile.children[0].text = "로" + theTile.coordinate.y + ", 컬" + theTile.coordinate.x; /* 타일내 텍스트 정보 초기화해줌*/
+          this.tileGroup.add(theTile);
+          console.log("에드됨[" + (holes - j).toString() + "][" + i + "]");
+        }
+      }
+    }
+  },
+  nextPick: function(){
+    if(!game.input.onDown.has(this.pickTile, this)){
+      game.input.onDown.add(this.pickTile, this);
+      console.log("처리 끝 콜백 살아남");                         
+    }
+  },
   holesBelow: function(row, col){ /* 해당 행의 열중에 null로 초기화된 수를 리턴함 즉 아래로 얼만큼 떨어트릴지를 구하기 위함*/
     var result = 0; /* 0으로 초기화*/
-    for(var i = row + 1; i < game_data.fieldSize; i++){ /* 해당 열에서 부터 배치된 행만큼 포문을 돌림*/
+    for(var i = row + 1; i < game_data.fieldSize.rows; i++){ /* 해당 열에서 부터 배치된 행만큼 포문을 돌림*/
       if(this.tilesArray[i][col] == null) result ++; /* 만약 해당 행의 열중에 null이 있다면* 리절트를 쁠쁠해줌*/
     } /*포문이 끝나면*/
     return result; /* 리절트만큼 반환*/
   },
   holesInCol: function(col){ /* 해당 열의 행중에 null로 초기화된 수를 리턴함 즉 아래로 얼마의 열이 연달아 떨어질지를 구하기 위함*/
     var result = 0; /* 0으로 초기화*/
-    for(var i = 0; i < game_data.fieldSize; i++){ /* 모든 열들중에서 배치된 행만큼 포문을 돌림*/
+    for(var i = 0; i < game_data.fieldSize.rows; i++){ /* 모든 열들중에서 배치된 행만큼 포문을 돌림*/
       if(this.tilesArray[i][col] == null) result ++; /* 만약 해당 행의 열중에 null이 있다면* 리절트를 쁠쁠해줌*/
     }
     return result;
