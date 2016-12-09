@@ -26,7 +26,7 @@ function preload() {
 function create() {
   game.physics.startSystem(Phaser.Physics.ARCADE); /* 물리적용*/
   game.add.sprite(0, 0, 'sky'); /* 배경 에드*/
-  
+
   platforms = game.add.group(); /* 그룹핑함*/
   platforms.enableBody = true; /* platforms에 들어가는건 물리가 적용됨*/
   
@@ -68,7 +68,7 @@ function update() {
   game.physics.arcade.overlap(player, stars, collectStar, null, this); /* stars그룹이 플레이어와 오버랩될지collectStar 함수 호출*/
   
   player.body.velocity.x = 0; /* 캐릭터 속력의 x값을 0으로 초기화*/
-
+  
   if(cursors.left.isDown){ /* cursors에 정의된 메서드내의 left를 누른 상태일시*/
       player.body.velocity.x = -150; /* 속력의 x값을 -150으로 설정함*/
       player.animations.play('left'); /* 정의된 애니메이션인 left를 호출함*/

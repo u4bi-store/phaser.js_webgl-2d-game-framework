@@ -138,7 +138,7 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
     tileDiff.subtract(this.visitedTiles[this.visitedTiles.length - 2].x, this.visitedTiles[this.visitedTiles.length - 2].y); /* 현재 타일 이전 요소의 폼 x,y 짜룸*/
     
     if(tileDiff.x == 0) arrow.angle = -90 * tileDiff.y; /* 0일시 앵글 -90 곱하기 tilediff의 y값*/
-    else{
+    else{	ㅂㅈ
       /* 그게 아닐시에*/
       arrow.angle = 90 * (tileDiff.x + 1); /* 앵글 90 곱하기 tilediff의 y값*/
       
