@@ -8,6 +8,7 @@ var lives, livesText;
 var starInterval, ledgeInterval;
 var startButton;
 var comment_ready;
+var audio_star, audio_jump, audio_lives;
 
 var flag = false;
 var ready = true;
@@ -23,12 +24,20 @@ function init(){
 }
 
 function preload() {
+  game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+  game.scale.pageAlignHorizontally = true;
+  game.scale.pageAlignVertically = true;
+  
   game.load.image('comment_ready', 'images/comment_ready.png');
   game.load.image('button', 'images/startbutton.png');
   game.load.image('sky', 'images/sky.png');
   game.load.image('ground', 'images/platform.png');
   game.load.image('star', 'images/star.png');
   game.load.spritesheet('dude', 'images/dude.png', 32, 48);
+  
+  game.load.audio('star', 'audio/star.mp3');
+  game.load.audio('jump', 'audio/jump.mp3');
+  game.load.audio('lives', 'audio/lives.mp3');
   cursors = game.input.keyboard.createCursorKeys();
 }
 
@@ -70,7 +79,7 @@ function create() {
   
   updateStar();
   var text_info = { fontSize: '32px', fill: '#000' }; /* 데이터 정보 객체에 담음*/
-  scoreText = game.add.text(16, 16, '점수 : 0', text_info); /* scoreText는 text_info 주입하며 초기화시킴*/
+  scoreText = game.add.text(16, 16, '스타 : 0', text_info); /* scoreText는 text_info 주입하며 초기화시킴*/
   livesText = game.add.text(game.world.width-120, 16, '생명 : '+lives, text_info); /* scoreText는 text_info 주입하며 초기화시킴*/
   
   starInterval = setInterval(updateStar, 10000);
@@ -79,6 +88,11 @@ function create() {
   startButton = game.add.button(game.world.width*0.5, game.world.height*0.5, 'button', startGame, this, 1, 0, 2);
   startButton.anchor.set(0.5);
   comment_ready = game.add.sprite(56, game.world.height-210, 'comment_ready');
+  
+  audio_star = game.add.audio('star');
+  audio_jump = game.add.audio('jump');
+  audio_lives = game.add.audio('lives');
+  
 }
 
 function startGame() {
@@ -111,13 +125,15 @@ function update() {
 
     if (cursors.up.isDown && player.body.touching.down && hitPlatform){
       /* 위쪽키를 누른 상태에서 플랫폼과 캐릭터간의 충돌이 감지된 상태에서 그 충돌이 캐릭터의 바디 아래쪽이라면*/
-        player.body.velocity.y = -350; /* 속력의 y값을 -350으로 설정함*/
+      player.body.velocity.y = -350; /* 속력의 y값을 -350으로 설정함*/
+      audio_jump.play();
     }
     if(player.body.position.y > game.world.height){
       if(lives !=0){
-        player.body.velocity.y = -350;
+        player.body.velocity.y = -650;
         lives--;
         livesText.text = '생명 : ' + lives; /* livesText의 문구를 재설정함*/
+        audio_lives.play();
       }else{
         livesText.position.x = livesText.position.x-1;
         livesText.text = '하늘나라로 떠나셨습니다 또르르'; /* livesText의 문구를 재설정함*/
@@ -128,8 +144,9 @@ function update() {
 
 function collectStar (player, star) {
   star.kill(); /* starts 그룹안의 특정 요소 star를 지움*/
-  score += 10; /* 콜백이 호출되면 score 점수는 올려줌*/
-  scoreText.text = '점수 : ' + score; /* scoreText의 문구를 재설정함*/
+  score += 1; /* 콜백이 호출되면 score 점수는 올려줌*/
+  scoreText.text = '스타 : ' + score; /* scoreText의 문구를 재설정함*/
+  audio_star.play();
 }
 
 function updateLedge(){
@@ -137,11 +154,12 @@ function updateLedge(){
   
   flag = !flag;
   if(flag) type = 400;
-  else type = -150;
-  var ledge = platforms.create(type, -50, 'ground'); /* 400,400 위치에생성*/
+  else type = 0;
+  var ledge = platforms.create(type+Math.random()*300, -50, 'ground'); /* 400,400 위치에생성*/
   ledge.body.immovable = true;
   ledge.body.gravity.y = 6; /* star의 중력도 y값 정의*/
   ledge.body.bounce.y = 0.7+Math.random()*0.2; /* ledge에게 충돌에 의한 튕김값 정의함*/
+  ledge.scale.setTo(0.1, 0.3);
 }
 
 function updateStar(){
