@@ -8,11 +8,13 @@ var click;
 var playing = false;
 
 var timeText, time;
+var resultText;
 
 var passTimer;
 
+var gameWidth = 1920, gameHeight = 1200;
 function init(){
-  game = new Phaser.Game(1920, 1200, Phaser.AUTO, 'game-area', {
+  game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-area', {
     preload: preload,
     create: create,
     update: update
@@ -26,7 +28,7 @@ function preload(){
   game.scale.pageAlignVertically = true;
   game.load.image('background', 'images/back_0.jpg');
   game.load.image('click', 'images/click.png');
-  game.load.image('info', 'images/info.png');
+  game.load.image('info', 'images/info_0.png');
   game.load.image('crosshair', 'images/crosshair.png');
   game.load.image('target', 'images/target.png');
 }
@@ -43,7 +45,8 @@ function create(){
   
   crosshair = game.add.sprite(0, 0, 'crosshair');
   game.physics.enable(crosshair, Phaser.Physics.ARCADE);
- 
+
+  resultText = game.add.text(gameWidth/1.5, gameHeight/2, '', { font: 'bold 10rem NanumGothic', fill: '#ffff00' });
 }
 
 function update(){
@@ -59,6 +62,8 @@ function update(){
       target.reset(click.x, click.y);
       target.body.velocity.set(0, 0);
       timeText.destroy();
+      resultText.text = time+'초!';
+      setTimeout(function(){resultText.text ='';},1500);
     }
   }
 }
@@ -70,8 +75,8 @@ function start(){
   playing =true;
   time = 0;
   
-  var textStyle = { font: 'bold 3rem NanumGothic', fill: '#000' };
-  timeText = game.add.text(window.innerWidth+200, 5, '누적시간 : '+time+'초', textStyle);
+  var textStyle = { font: 'bold 5rem NanumGothic', fill: '#000' };
+  timeText = game.add.text(gameWidth/1.6, 5, '누적시간 : '+time+'초', textStyle);
   updateTarget();
   setTimeout('passTime()', 1000);
 }
@@ -84,8 +89,8 @@ function passTime(){
 }
 
 function ready(){
-  info = game.add.sprite(window.innerWidth-(window.innerWidth/4.3), 0, 'info');
-  click = game.add.button(window.innerWidth/2, window.innerHeight/2, 'click',start, this, 1, 0, 2);
+  info = game.add.sprite(gameWidth/3.7, 0, 'info');
+  click = game.add.button(gameWidth/2, gameHeight/2, 'click',start, this, 1, 0, 2);
   click.anchor.set(-0.2, -0.2);
 }
 
