@@ -122,9 +122,7 @@ function updateTarget(){
   var flag_rand  = Math.floor(Math.random() * 2);
   if(flag_rand){
     value = -value;
-    console.log(parseInt(value)%2);
     if(!hanzo_info.on && parseInt(value)%5 == -0){
-      console.log('dd');
       hanzoTime(true);
       crosshair.animations.play('hanzoAim');
       hanzo_info.shot = setTimeout(hanzoKill, 1000);
