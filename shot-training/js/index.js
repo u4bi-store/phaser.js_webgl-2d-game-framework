@@ -9,6 +9,8 @@ var playing = false;
 
 var timeText, time;
 
+var passTimer;
+
 function init(){
   game = new Phaser.Game(1920, 1200, Phaser.AUTO, 'game-area', {
     preload: preload,
@@ -41,6 +43,7 @@ function create(){
   
   crosshair = game.add.sprite(0, 0, 'crosshair');
   game.physics.enable(crosshair, Phaser.Physics.ARCADE);
+ 
 }
 
 function update(){
@@ -50,6 +53,7 @@ function update(){
   
   if(playing){
     if(!targetIn){
+      clearTimeout(passTimer);
       playing=!playing;
       ready();
       target.reset(click.x, click.y);
@@ -68,17 +72,30 @@ function start(){
   
   var textStyle = { font: 'bold 3rem NanumGothic', fill: '#000' };
   timeText = game.add.text(window.innerWidth+200, 5, '누적시간 : '+time+'초', textStyle);
+  updateTarget();
   setTimeout('passTime()', 1000);
 }
 
 function passTime(){
   time++;
+  updateTarget();
   timeText.text = '누적시간 : '+time+'초';
-  setTimeout('passTime()', 1000);
+  passTimer = setTimeout('passTime()', 1000);
 }
 
 function ready(){
   info = game.add.sprite(window.innerWidth-(window.innerWidth/4.3), 0, 'info');
   click = game.add.button(window.innerWidth/2, window.innerHeight/2, 'click',start, this, 1, 0, 2);
   click.anchor.set(-0.2, -0.2);
+}
+
+function updateTarget(){
+  var value = Math.floor(Math.random() * 100);
+  
+  var flag_rand  = Math.floor(Math.random() * 2);
+  if(flag_rand) value = -value;
+  
+  target.body.velocity.x +=value;
+  target.body.velocity.y +=value;
+  console.log(target.body.velocity.x + ' : ' + target.body.velocity.y);
 }
