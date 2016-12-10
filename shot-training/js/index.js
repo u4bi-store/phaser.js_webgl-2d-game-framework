@@ -12,6 +12,8 @@ var resultText;
 
 var passTimer;
 
+var die;
+
 var gameWidth = 1920, gameHeight = 1200;
 function init(){
   game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-area', {
@@ -31,6 +33,8 @@ function preload(){
   game.load.image('info', 'images/info_0.png');
   game.load.image('crosshair', 'images/crosshair.png');
   game.load.image('target', 'images/target.png');
+  
+  game.load.audio('die', 'audio/die.mp3');
 }
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -47,6 +51,8 @@ function create(){
   game.physics.enable(crosshair, Phaser.Physics.ARCADE);
 
   resultText = game.add.text(gameWidth/1.5, gameHeight/2, '', { font: 'bold 10rem NanumGothic', fill: '#ffff00' });
+  
+  die = game.add.audio('die');
 }
 
 function update(){
@@ -56,6 +62,7 @@ function update(){
   
   if(playing){
     if(!targetIn){
+      if(time == 0) return;
       clearTimeout(passTimer);
       playing=!playing;
       ready();
@@ -64,6 +71,7 @@ function update(){
       timeText.destroy();
       resultText.text = time+'초!';
       setTimeout(function(){resultText.text ='';},1500);
+      die.play();
     }
   }
 }
@@ -95,11 +103,13 @@ function ready(){
 }
 
 function updateTarget(){
+  
   var value = Math.floor(Math.random() * 100);
   
+  value+=time*10;
   var flag_rand  = Math.floor(Math.random() * 2);
   if(flag_rand) value = -value;
   
-  target.body.velocity.x +=value+time;
-  target.body.velocity.y +=value+time;
+  target.body.velocity.x +=value;
+  target.body.velocity.y +=value;
 }
