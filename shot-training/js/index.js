@@ -77,13 +77,11 @@ function update(){
   crosshair.y = game.input.y-(crosshair.height/2);
   var targetIn = game.physics.arcade.overlap(crosshair, target, null, null, this);
   
-  if(playing){
-    if(!targetIn){
-      if(time == 0) return;
-      clearTimeout(hanzo_info.shot);
-      fail();
-      die.play();
-    }
+  if(playing && !targetIn){
+    if(time == 0) return;
+    clearTimeout(hanzo_info.shot);
+    fail();
+    die.play();
   }
 }
 
@@ -142,6 +140,8 @@ function hanzoRemove(){
 }
 
 function hanzoKill(){
+  console.log('d');
+  playing = false;
   hanzo = game.add.sprite(gameWidth/5, gameHeight/2, 'hanzo');
   kill.play();
   hanzoTime(false);
@@ -160,7 +160,7 @@ function hanzoTime(bool){
 
 function fail(){
   clearTimeout(passTimer);
-  playing=!playing;
+  playing=false;
   ready();
   target.reset(click.x, click.y);
   target.body.velocity.set(0, 0);
