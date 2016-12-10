@@ -2,7 +2,7 @@
 
 var game;
 var target, background;
-var crosshair;
+var crosshair, crosshair_shot;
 var info;
 var click;
 var playing = false;
@@ -12,7 +12,8 @@ var resultText;
 
 var passTimer;
 
-var die;
+var die, kill;
+var hanzo;
 
 var gameWidth = 1920, gameHeight = 1200;
 function init(){
@@ -29,12 +30,15 @@ function preload(){
   game.scale.pageAlignHorizontally = true;
   game.scale.pageAlignVertically = true;
   game.load.image('background', 'images/back_0.jpg');
+  game.load.image('hanzo', 'images/hanzo.png');
   game.load.image('click', 'images/click.png');
   game.load.image('info', 'images/info_0.png');
   game.load.image('crosshair', 'images/crosshair.png');
+  game.load.image('crosshair_shot', 'images/crosshair_shot.png');
   game.load.image('target', 'images/target.png');
   
   game.load.audio('die', 'audio/die.mp3');
+  game.load.audio('kill', 'audio/kill.mp3');
 }
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -53,6 +57,7 @@ function create(){
   resultText = game.add.text(gameWidth/1.5, gameHeight/2, '', { font: 'bold 10rem NanumGothic', fill: '#ffff00' });
   
   die = game.add.audio('die');
+  kill = game.add.audio('kill');
 }
 
 function update(){
@@ -112,4 +117,10 @@ function updateTarget(){
   
   target.body.velocity.x +=value;
   target.body.velocity.y +=value;
+}
+
+function hanzoKill(){
+  hanzo = game.add.sprite(gameWidth/5, gameHeight/2, 'hanzo');
+  kill.play();
+  setTimeout(function(){hanzo.destroy();},1000);
 }
