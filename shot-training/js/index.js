@@ -7,12 +7,15 @@ var info;
 var click;
 var playing = false;
 
+var timeText, time;
+
 function init(){
   game = new Phaser.Game(1920, 1200, Phaser.AUTO, 'game-area', {
     preload: preload,
     create: create,
     update: update
   });
+
 }
 
 function preload(){
@@ -39,6 +42,7 @@ function create(){
   crosshair = game.add.sprite(0, 0, 'crosshair');
   game.physics.enable(crosshair, Phaser.Physics.ARCADE);
 }
+
 function update(){
   crosshair.x = game.input.x-(crosshair.width/2);
   crosshair.y = game.input.y-(crosshair.height/2);
@@ -46,20 +50,31 @@ function update(){
   
   if(playing){
     if(!targetIn){
-      alert('fail');
       playing=!playing;
       ready();
       target.reset(click.x, click.y);
       target.body.velocity.set(0, 0);
+      timeText.destroy();
     }
   }
 }
 
 function start(){
-  target.body.velocity.set(500, 0);
+  target.body.velocity.set(200, 0);
   click.destroy();
   info.destroy();
   playing =true;
+  time = 0;
+  
+  var textStyle = { font: 'bold 3rem NanumGothic', fill: '#000' };
+  timeText = game.add.text(window.innerWidth+200, 5, '누적시간 : '+time+'초', textStyle);
+  setTimeout('passTime()', 1000);
+}
+
+function passTime(){
+  time++;
+  timeText.text = '누적시간 : '+time+'초';
+  setTimeout('passTime()', 1000);
 }
 
 function ready(){
