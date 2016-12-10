@@ -73,7 +73,7 @@ function create(){
   startButton.anchor.set(0.5);
 
   bounce = game.add.audio('bounce');
-  intro = game.add.audio('intro');  
+  intro = game.add.audio('intro');
 }
 function update(){
   game.physics.arcade.collide(ball, paddle, ballHitPaddle);

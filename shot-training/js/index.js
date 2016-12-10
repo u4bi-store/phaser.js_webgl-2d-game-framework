@@ -2,7 +2,7 @@
 
 var game;
 var target, background;
-var crosshair, crosshair_shot;
+var crosshair;
 var info;
 var click;
 var playing = false;
@@ -14,6 +14,17 @@ var passTimer;
 
 var die, kill;
 var hanzo;
+
+var hanzo_info = {
+  on: false,
+  crosshair : {
+    onX : 0,
+    onY : 0,
+    offY : 0,
+    offX : 0
+  },
+  shot: 0
+};
 
 var gameWidth = 1920, gameHeight = 1200;
 function init(){
@@ -33,8 +44,7 @@ function preload(){
   game.load.image('hanzo', 'images/hanzo.png');
   game.load.image('click', 'images/click.png');
   game.load.image('info', 'images/info_0.png');
-  game.load.image('crosshair', 'images/crosshair.png');
-  game.load.image('crosshair_shot', 'images/crosshair_shot.png');
+  game.load.spritesheet('crosshair', 'images/crosshair.png', 80,80);
   game.load.image('target', 'images/target.png');
   
   game.load.audio('die', 'audio/die.mp3');
@@ -58,6 +68,8 @@ function create(){
   
   die = game.add.audio('die');
   kill = game.add.audio('kill');
+  game.input.onDown.add(hanzoRemove, this);
+  crosshair.animations.add('hanzoAim', [1, 0, 1, 0, 1, 0, 1, 0, 1], 10, false);
 }
 
 function update(){
@@ -68,20 +80,15 @@ function update(){
   if(playing){
     if(!targetIn){
       if(time == 0) return;
-      clearTimeout(passTimer);
-      playing=!playing;
-      ready();
-      target.reset(click.x, click.y);
-      target.body.velocity.set(0, 0);
-      timeText.destroy();
-      resultText.text = time+'초!';
-      setTimeout(function(){resultText.text ='';},1500);
+      clearTimeout(hanzo_info.shot);
+      fail();
       die.play();
     }
   }
 }
 
 function start(){
+  hanzoTime(false);
   target.body.velocity.set(200, 0);
   click.destroy();
   info.destroy();
@@ -113,14 +120,53 @@ function updateTarget(){
   
   value+=time*10;
   var flag_rand  = Math.floor(Math.random() * 2);
-  if(flag_rand) value = -value;
+  if(flag_rand){
+    value = -value;
+    console.log(parseInt(value)%2);
+    if(!hanzo_info.on && parseInt(value)%5 == -0){
+      console.log('dd');
+      hanzoTime(true);
+      crosshair.animations.play('hanzoAim');
+      hanzo_info.shot = setTimeout(hanzoKill, 1000);
+    }
+  }
   
   target.body.velocity.x +=value;
   target.body.velocity.y +=value;
 }
 
+function hanzoRemove(){
+  if(!playing)return;
+  if(time == 0) return;
+  if(playing && !hanzo_info.on)return hanzoKill();
+  clearTimeout(hanzo_info.shot);
+  hanzoTime(false);
+}
+
 function hanzoKill(){
   hanzo = game.add.sprite(gameWidth/5, gameHeight/2, 'hanzo');
   kill.play();
-  setTimeout(function(){hanzo.destroy();},1000);
+  hanzoTime(false);
+  setTimeout(function(){hanzo.destroy(); fail(); },1000);
+}
+
+function hanzoTime(bool){
+  if(bool){
+    hanzo_info.on = true;
+    crosshair.frame = 1;
+  }else{
+    hanzo_info.on = false;
+    crosshair.frame = 0;
+  }
+}
+
+function fail(){
+  clearTimeout(passTimer);
+  playing=!playing;
+  ready();
+  target.reset(click.x, click.y);
+  target.body.velocity.set(0, 0);
+  timeText.destroy();
+  resultText.text = time+'초!';
+  setTimeout(function(){resultText.text ='';},1500);
 }
