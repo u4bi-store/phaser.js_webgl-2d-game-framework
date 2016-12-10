@@ -12,7 +12,7 @@ var resultText;
 
 var passTimer;
 
-var die, kill;
+var die, kill, stop;
 var hanzo;
 
 var hanzo_info = {
@@ -49,6 +49,7 @@ function preload(){
   
   game.load.audio('die', 'audio/die.mp3');
   game.load.audio('kill', 'audio/kill.mp3');
+  game.load.audio('stop', 'audio/stop.mp3');
 }
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -68,6 +69,7 @@ function create(){
   
   die = game.add.audio('die');
   kill = game.add.audio('kill');
+  stop = game.add.audio('stop');
   game.input.onDown.add(hanzoRemove, this);
   crosshair.animations.add('hanzoAim', [1, 0, 1, 0, 1, 0, 1, 0, 1], 10, false);
 }
@@ -138,13 +140,14 @@ function hanzoRemove(){
   if(playing && !hanzo_info.on)return hanzoKill();
   clearTimeout(hanzo_info.shot);
   hanzoTime(false);
+  kill.stop();
+  stop.play();
 }
 
 function hanzoKill(){
-  console.log('d');
+  kill.play();
   playing = false;
   hanzo = game.add.sprite(gameWidth/5, gameHeight/2, 'hanzo');
-  kill.play();
   hanzoTime(false);
   setTimeout(function(){hanzo.destroy(); fail(); },1000);
 }
@@ -153,6 +156,7 @@ function hanzoTime(bool){
   if(bool){
     hanzo_info.on = true;
     crosshair.frame = 1;
+    kill.play();
   }else{
     hanzo_info.on = false;
     crosshair.frame = 0;
