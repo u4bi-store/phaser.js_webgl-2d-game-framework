@@ -5,6 +5,7 @@ var target, background;
 var crosshair;
 var info;
 var click;
+var playing = false;
 
 function init(){
   game = new Phaser.Game(1920, 1200, Phaser.AUTO, 'game-area', {
@@ -27,25 +28,42 @@ function preload(){
 function create(){
   game.physics.startSystem(Phaser.Physics.ARCADE);
   background = game.add.tileSprite(0, 0, 1920, 1200, 'background');
-  info = game.add.sprite(window.innerWidth/2, window.innerHeight/2, 'info');
-  info.anchor.set(-.48, 2);
-  click = game.add.button(window.innerWidth/2, window.innerHeight/2, 'click',start, this, 1, 0, 2);
-  click.anchor.set(-0.2, -0.2);
+  ready();
   
   target = game.add.sprite(click.x, click.y, 'target');
   game.physics.enable(target, Phaser.Physics.ARCADE);
-  target.body.collideWorldBounds = true; 
+  target.body.collideWorldBounds = true;
   target.body.bounce.set(1);
   target.checkWorldBounds = true;
+  
   crosshair = game.add.sprite(0, 0, 'crosshair');
+  game.physics.enable(crosshair, Phaser.Physics.ARCADE);
 }
 function update(){
   crosshair.x = game.input.x-(crosshair.width/2);
   crosshair.y = game.input.y-(crosshair.height/2);
+  var targetIn = game.physics.arcade.overlap(crosshair, target, null, null, this);
+  
+  if(playing){
+    if(!targetIn){
+      alert('fail');
+      playing=!playing;
+      ready();
+      target.reset(click.x, click.y);
+      target.body.velocity.set(0, 0);
+    }
+  }
 }
 
 function start(){
   target.body.velocity.set(500, 0);
   click.destroy();
   info.destroy();
+  playing =true;
+}
+
+function ready(){
+  info = game.add.sprite(window.innerWidth-(window.innerWidth/4.3), 0, 'info');
+  click = game.add.button(window.innerWidth/2, window.innerHeight/2, 'click',start, this, 1, 0, 2);
+  click.anchor.set(-0.2, -0.2);
 }
