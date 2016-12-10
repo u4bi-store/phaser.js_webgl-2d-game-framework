@@ -97,6 +97,7 @@ function start(){
   timeText = game.add.text(gameWidth/1.6, 5, '누적시간 : '+time+'초', textStyle);
   updateTarget();
   setTimeout('passTime()', 1000);
+  resultText.text = '';
 }
 
 function passTime(){
@@ -166,5 +167,4 @@ function fail(){
   target.body.velocity.set(0, 0);
   timeText.destroy();
   resultText.text = time+'초!';
-  setTimeout(function(){resultText.text ='';},1500);
 }
