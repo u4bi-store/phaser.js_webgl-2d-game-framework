@@ -95,7 +95,6 @@ function updateTarget(){
   var flag_rand  = Math.floor(Math.random() * 2);
   if(flag_rand) value = -value;
   
-  target.body.velocity.x +=value;
-  target.body.velocity.y +=value;
-  console.log(target.body.velocity.x + ' : ' + target.body.velocity.y);
+  target.body.velocity.x +=value+time;
+  target.body.velocity.y +=value+time;
 }
