@@ -71,7 +71,7 @@ function create(){
   kill = game.add.audio('kill');
   stop = game.add.audio('stop');
   game.input.onDown.add(hanzoRemove, this);
-  crosshair.animations.add('hanzoAim', [1, 0, 1, 0, 1, 0, 1, 0, 1], 10, false);
+  crosshair.animations.add('hanzoAim', [1, 0, 1, 0, 1, 0, 1, 0, 1, 0], 10, false);
 }
 
 function update(){
@@ -155,11 +155,9 @@ function hanzoKill(){
 function hanzoTime(bool){
   if(bool){
     hanzo_info.on = true;
-    crosshair.frame = 1;
     kill.play();
   }else{
     hanzo_info.on = false;
-    crosshair.frame = 0;
   }
 }
 
