@@ -137,6 +137,14 @@ function update() {
       }else{
         livesText.position.x = livesText.position.x-1;
         livesText.text = '하늘나라로 떠나셨습니다 또르르'; /* livesText의 문구를 재설정함*/
+        if(player.body.position.y > game.world.height*3){
+          player.body.velocity.y = -100;
+          player.body.position.y=game.world.height/2;
+          lives = 3;
+          score = 0;
+          scoreText.text = '스타 : ' + score;
+          livesText.text = '생명 : ' + lives;
+        }
       }
     }
   }else player.frame = 4;
