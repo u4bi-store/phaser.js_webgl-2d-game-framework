@@ -26,7 +26,7 @@ function preload() {
 function create() {
   game.physics.startSystem(Phaser.Physics.ARCADE); /* 물리적용*/
   game.add.sprite(0, 0, 'sky'); /* 배경 에드*/
-
+  
   platforms = game.add.group(); /* 그룹핑함*/
   platforms.enableBody = true; /* platforms에 들어가는건 물리가 적용됨*/
   

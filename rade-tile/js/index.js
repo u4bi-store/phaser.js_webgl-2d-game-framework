@@ -24,8 +24,8 @@ radeTile.prototype = { /* 클래스 호출됨 prototype에 모두 담음*/
       @ EXACT_FIT : 종횡비 유지안함 가로로 꽉채움
       @ SHOW_ALL  : 이미지나 화면이 왜곡되지 않게 가로 세로 비율을 유지하며 캔버스 크기를 채움
       @ RESIZE    : 최대 가능한 폭과 높이로 캔버스 크기를 동적으로 만듬
-			@ USER_SCALE: 자신이 설정한 크기 사용자가 정의한 동적 크기로 조정
-    */
+			@ USER_SCALE: 자신이 설정한 크기 사용자가 정의한 동적 크기로 조정 */
+    
     game.scale.pageAlignHorizontally = true; /* 가로 정렬 */
     game.scale.pageAlignVertically = true; /* 세로 정렬 */
     this.initTile(); /* 타일 초기화함*/
