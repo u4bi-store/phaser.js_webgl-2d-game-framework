@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="css/style.css"/>
+	<title>phaser basic</title>
+  <script src="lib/phaser.min.js"></script>
+  <script>
+  
+    var game;
+
+    window.onload = init;
+
+    function init(){
+        console.log('ok game');
+        game = new Phaser.Game(300, 200, Phaser.AUTO, 'game-area', {
+            preload: preload,
+            create: create,
+            update: update
+        });
+    }
+
+    function preload(){
+        // game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        // game.scale.pageAlignHorizontally = true;
+        // game.scale.pageAlignVertically = true;
+        game.stage.backgroundColor = 'rgba(0,0,0,0.44)';
+    }
+
+    function create(){
+    }
+
+    function update(){
+
+    }
+
+  </script>
+</head>
+<body>
+  <div id="game-area"></div>
+</body>
+</html>
